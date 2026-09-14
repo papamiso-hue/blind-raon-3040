@@ -12,9 +12,9 @@ import pandas as pd
 from supabase import create_client, Client
 from pypdf import PdfReader
 
-# 1. 스트림릿 기본 페이지 설정 (반드시 최상단 1회 호출)
+# 1. 스트림릿 기본 페이지 설정
 st.set_page_config(
-    page_title="블라인드 라온 - 3040 검증형 프라이빗 소셜 클럽",
+    page_title="블라인드 라온 - 3040 프라이빗 소셜 클럽",
     page_icon="💼",
     layout="centered",
     initial_sidebar_state="collapsed"
@@ -33,7 +33,7 @@ st.markdown("""
 </head>
 """, unsafe_allow_html=True)
 
-# 3. 서비스 기본 상수 정의
+# 3. 서비스 기본 상수
 BRAND_NAME_KR = "블라인드 라온"
 BRAND_NAME_EN = "BLIND RAON 3040"
 SITE_URL = "https://blind-raon-3040-xtwjdberufkkgwje2abbzq.streamlit.app"
@@ -58,7 +58,6 @@ PLATFORM_TYPO_RULES = {
 }
 
 def audit_text_typos(text: str):
-    """입력된 텍스트에서 오탈자 및 부적절한 표현 감지"""
     if not text:
         return []
     warnings = []
@@ -112,233 +111,261 @@ CORE_QUESTIONS_3040 = {
     }
 }
 
-# --- 3040 모던 딥 네이비 & 사파이어 테마 CSS ---
+# --- 프리미엄 3040 리뉴얼 UI CSS (웹폰트 Pretendard 탑재 및 카드형 UI) ---
 st.markdown("""
     <style>
+    @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+
     .stApp {
-        background-color: #0B0F19 !important;
-        color: #F1F5F9 !important;
-        font-family: -apple-system, BlinkMacSystemFont, "Pretendard", "Segoe UI", Roboto, sans-serif;
+        background: radial-gradient(circle at 50% 0%, #172554 0%, #090D16 60%, #05070B 100%) !important;
+        color: #F8FAFC !important;
+        font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, Roboto, sans-serif !important;
     }
     .block-container { 
-        padding-top: 1.8rem !important; 
-        padding-bottom: 3.5rem !important; 
-        max-width: 620px !important; 
+        padding-top: 1.2rem !important; 
+        padding-bottom: 4rem !important; 
+        max-width: 520px !important; 
     }
 
+    /* 상단 헤더 */
+    .app-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 0 16px 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        margin-bottom: 16px;
+    }
+    .app-brand {
+        font-size: 1.25rem;
+        font-weight: 900;
+        letter-spacing: -0.5px;
+        background: linear-gradient(90deg, #FFFFFF 0%, #93C5FD 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    /* 히어로 박스 */
     .hero-box {
-        background: linear-gradient(145deg, #111827 0%, #0F172A 60%, #1E293B 100%);
-        border: 1px solid rgba(59, 130, 246, 0.4);
-        border-radius: 18px;
-        padding: 26px 20px 22px 20px;
+        background: linear-gradient(160deg, rgba(30, 41, 59, 0.7) 0%, rgba(15, 23, 42, 0.8) 100%);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid rgba(96, 165, 250, 0.25);
+        border-radius: 20px;
+        padding: 24px 20px;
         text-align: center;
-        margin-bottom: 1rem;
-        box-shadow: 0 10px 30px -10px rgba(37, 99, 235, 0.3);
+        margin-bottom: 1.2rem;
+        box-shadow: 0 16px 36px -10px rgba(37, 99, 235, 0.25);
     }
     .hero-badge {
-        display: inline-flex;
-        align-items: center;
-        gap: 5px;
-        background: rgba(37, 99, 235, 0.15);
+        display: inline-block;
+        background: rgba(59, 130, 246, 0.15);
         border: 1px solid rgba(96, 165, 250, 0.4);
         color: #60A5FA !important;
         font-size: 0.72rem;
         font-weight: 800;
-        letter-spacing: 2px;
-        padding: 4px 12px;
-        border-radius: 30px;
-        margin-bottom: 12px;
-    }
-    .hero-title {
-        font-size: 2.1rem;
-        font-weight: 900;
-        color: #FFFFFF !important;
-        letter-spacing: -0.8px;
-        line-height: 1.25;
+        letter-spacing: 1.5px;
+        padding: 4px 14px;
+        border-radius: 9999px;
         margin-bottom: 10px;
     }
-    .hero-subtitle {
-        font-size: 1.0rem;
-        font-weight: 600;
-        color: #CBD5E1 !important;
-        line-height: 1.55;
-        word-break: keep-all;
+    .hero-title {
+        font-size: 1.9rem;
+        font-weight: 900;
+        line-height: 1.25;
+        letter-spacing: -0.8px;
+        color: #FFFFFF !important;
+        margin-bottom: 8px;
     }
-    .hero-highlight {
-        color: #38BDF8 !important;
-        font-weight: 800;
+    .hero-subtitle {
+        font-size: 0.92rem;
+        font-weight: 500;
+        color: #94A3B8 !important;
+        line-height: 1.55;
     }
 
+    /* 3중 검증 안내 카드 */
     .promise-grid {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
         gap: 8px;
-        margin-bottom: 1rem;
+        margin-bottom: 1.2rem;
     }
     .promise-card {
-        background: #111827 !important;
-        border: 1px solid #1F2937 !important;
-        border-radius: 12px;
-        padding: 14px 6px;
+        background: rgba(15, 23, 42, 0.65);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        border-radius: 14px;
+        padding: 12px 6px;
         text-align: center;
     }
-    .promise-icon {
-        font-size: 1.4rem;
-        margin-bottom: 4px;
+    .promise-icon { font-size: 1.3rem; margin-bottom: 3px; }
+    .promise-title { font-size: 0.8rem; font-weight: 800; color: #E2E8F0 !important; }
+    .promise-desc { font-size: 0.68rem; color: #64748B !important; margin-top: 2px; }
+
+    /* 대형 세로형 프로필 매칭 카드 (인스타/틴더 스타일) */
+    .feed-card {
+        position: relative;
+        border-radius: 22px;
+        overflow: hidden;
+        margin-bottom: 1.6rem;
+        background: #0F172A;
+        border: 1px solid rgba(96, 165, 250, 0.2);
+        box-shadow: 0 20px 30px -10px rgba(0, 0, 0, 0.6);
     }
-    .promise-title {
-        font-size: 0.84rem;
+    .feed-img-box {
+        position: relative;
+        width: 100%;
+        height: 380px;
+        overflow: hidden;
+    }
+    .feed-img-blur {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        filter: blur(10px) brightness(0.85);
+        transform: scale(1.08);
+    }
+    .feed-img-clear {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    .feed-overlay {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 60%;
+        background: linear-gradient(to top, #0F172A 15%, transparent 100%);
+        pointer-events: none;
+    }
+    .feed-blind-tag {
+        position: absolute;
+        top: 16px;
+        left: 16px;
+        background: rgba(15, 23, 42, 0.75);
+        backdrop-filter: blur(8px);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 0.72rem;
         font-weight: 800;
-        color: #F8FAFC !important;
+        color: #93C5FD;
     }
-    .promise-desc {
-        font-size: 0.70rem;
-        color: #94A3B8 !important;
-        margin-top: 2px;
+    .feed-match-badge {
+        position: absolute;
+        top: 16px;
+        right: 16px;
+        background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%);
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 900;
+        color: #FFFFFF;
+        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
     }
-
-    .criteria-box {
-        background: rgba(15, 23, 42, 0.8);
-        border: 1px solid #334155;
-        border-radius: 10px;
-        padding: 10px 16px;
-        margin-bottom: 1.2rem;
+    .feed-content {
+        padding: 16px 20px 20px 20px;
+        margin-top: -24px;
+        position: relative;
+    }
+    .feed-name-row {
         display: flex;
-        align-items: center;
-        justify-content: space-between;
-    }
-
-    .blind-teaser-box {
-        background: #111827;
-        border: 1px solid #1F2937;
-        border-radius: 14px;
-        padding: 16px;
-        margin-bottom: 1.4rem;
-    }
-    .teaser-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 12px;
-    }
-    .teaser-card {
-        background: #1E293B;
-        border: 1px solid #334155;
-        border-radius: 10px;
-        padding: 10px 14px;
-        display: flex;
-        align-items: center;
-        gap: 12px;
+        align-items: baseline;
+        gap: 8px;
         margin-bottom: 8px;
     }
-    .teaser-avatar {
-        width: 48px;
-        height: 48px;
-        border-radius: 50%;
-        filter: blur(5px);
-        border: 1.5px solid #3B82F6;
+    .feed-name {
+        font-size: 1.45rem;
+        font-weight: 900;
+        color: #FFFFFF;
+        letter-spacing: -0.5px;
+    }
+    .feed-age {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #94A3B8;
+    }
+    .badge-pill-job {
+        background: rgba(59, 130, 246, 0.15);
+        color: #93C5FD;
+        border: 1px solid rgba(96, 165, 250, 0.3);
+        padding: 4px 10px;
+        border-radius: 6px;
+        font-size: 0.76rem;
+        font-weight: 800;
+    }
+    .badge-pill-score {
+        background: rgba(16, 185, 129, 0.15);
+        color: #6EE7B7;
+        border: 1px solid rgba(16, 185, 129, 0.3);
+        padding: 4px 10px;
+        border-radius: 6px;
+        font-size: 0.76rem;
+        font-weight: 800;
+    }
+    .feed-intro {
+        margin-top: 10px;
+        font-size: 0.9rem;
+        color: #CBD5E1;
+        line-height: 1.5;
+        font-style: italic;
     }
 
+    /* 모던 탭 스타일 */
     div[data-baseweb="tab-list"] {
-        background-color: #111827 !important;
-        padding: 4px;
-        border-radius: 10px;
+        background-color: rgba(15, 23, 42, 0.8) !important;
+        padding: 5px;
+        border-radius: 14px;
+        border: 1px solid rgba(255, 255, 255, 0.08) !important;
+        margin-bottom: 1.4rem;
         gap: 4px;
-        border: 1px solid #1F2937 !important;
-        margin-bottom: 1.2rem;
     }
     div[data-baseweb="tab"] {
         flex: 1;
         height: 44px;
-        border-radius: 8px !important;
+        border-radius: 10px !important;
         background-color: transparent !important;
-        color: #94A3B8 !important;
-        font-weight: 700 !important;
+        color: #64748B !important;
+        font-weight: 800 !important;
         font-size: 0.92rem !important;
         border: none !important;
-        display: flex;
-        justify-content: center;
-        align-items: center;
     }
     div[data-baseweb="tab"][aria-selected="true"] {
-        background-color: #2563EB !important;
+        background: #2563EB !important;
         color: #FFFFFF !important;
-        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35);
+        box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
     }
-    div[data-baseweb="tab-border"] {
-        display: none !important;
-    }
+    div[data-baseweb="tab-border"] { display: none !important; }
 
+    /* 입력창 및 버튼 */
     div[data-baseweb="input"] {
-        background-color: #111827 !important;
-        border: 1.5px solid #1F2937 !important;
-        border-radius: 10px !important;
+        background-color: rgba(15, 23, 42, 0.9) !important;
+        border: 1.5px solid #1E293B !important;
+        border-radius: 12px !important;
     }
     div[data-baseweb="input"]:focus-within {
         border-color: #3B82F6 !important;
+        box-shadow: 0 0 0 1px #3B82F6 !important;
     }
-    div[data-baseweb="input"] input {
-        color: #FFFFFF !important;
-    }
-    label[data-testid="stWidgetLabel"] p {
-        color: #E2E8F0 !important;
-        font-weight: 700;
-        font-size: 0.88rem;
-    }
+    div[data-baseweb="input"] input { color: #FFFFFF !important; }
 
     .stButton>button { 
         width: 100%; 
-        border-radius: 10px; 
+        border-radius: 12px; 
         font-weight: 800; 
-        height: 3.2rem;
-        font-size: 1.02rem;
+        height: 3.4rem;
+        font-size: 1.05rem;
+        letter-spacing: -0.3px;
         border: none !important;
-        background: linear-gradient(90deg, #2563EB 0%, #1D4ED8 100%) !important;
+        background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%) !important;
         color: #FFFFFF !important;
-        box-shadow: 0 4px 14px rgba(37, 99, 235, 0.3);
+        box-shadow: 0 6px 18px rgba(37, 99, 235, 0.35);
+        transition: transform 0.1s ease;
     }
-    .stButton>button:hover {
-        background: linear-gradient(90deg, #3B82F6 0%, #2563EB 100%) !important;
-    }
+    .stButton>button:active { transform: scale(0.98); }
 
-    .badge-job {
-        background: rgba(37, 99, 235, 0.2);
-        color: #93C5FD;
-        border: 1px solid rgba(59, 130, 246, 0.4);
-        padding: 2px 8px;
-        border-radius: 4px;
-        font-size: 0.72rem;
-        font-weight: 700;
-    }
-    .badge-score {
-        background: rgba(16, 185, 129, 0.15);
-        color: #6EE7B7;
-        border: 1px solid rgba(16, 185, 129, 0.35);
-        padding: 2px 8px;
-        border-radius: 4px;
-        font-size: 0.72rem;
-        font-weight: 700;
-    }
-    .profile-avatar-blur {
-        width: 74px;
-        height: 74px;
-        border-radius: 50%;
-        object-fit: cover;
-        border: 2px solid #3B82F6;
-        filter: blur(6px);
-        transform: scale(0.96);
-    }
-    .profile-avatar-clear {
-        width: 74px;
-        height: 74px;
-        border-radius: 50%;
-        object-fit: cover;
-        border: 2px solid #10B981;
-    }
-
-    #MainMenu {visibility: hidden !important;}
-    footer {visibility: hidden !important;}
-    header {visibility: hidden !important;}
+    #MainMenu, footer, header { visibility: hidden !important; }
     </style>
 """, unsafe_allow_html=True)
 
@@ -385,8 +412,8 @@ def send_aligo_notice_sms(receiver_phone, text_message):
         pass
 
 DEFAULT_AVATARS = {
-    "남": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=300&auto=format&fit=crop",
-    "여": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=300&auto=format&fit=crop"
+    "남": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=600&auto=format&fit=crop",
+    "여": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=600&auto=format&fit=crop"
 }
 
 if "user_id" not in st.session_state:
@@ -407,7 +434,7 @@ if not st.session_state.user_id:
             <div class="hero-badge">🔒 3040 PRIVATE BLIND CLUB</div>
             <div class="hero-title">💼 {BRAND_NAME_KR}</div>
             <div class="hero-subtitle">가벼운 만남은 지치고, 결정사는 부담스러운 3040을 위한<br>
-            <span class="hero-highlight">직장·소득·신용 3중 검증 기반 프라이빗 매칭</span></div>
+            <strong style="color:#93C5FD;">직장·소득·신용 3중 검증 기반 프라이빗 매칭</strong></div>
         </div>
     """, unsafe_allow_html=True)
 
@@ -427,38 +454,6 @@ if not st.session_state.user_id:
                 <div class="promise-icon">🔒</div>
                 <div class="promise-title">블라인드 프로필</div>
                 <div class="promise-desc">상호 수락 시 얼굴 공개</div>
-            </div>
-        </div>
-    """, unsafe_allow_html=True)
-
-    st.markdown("""
-        <div class="criteria-box">
-            <span style="font-weight:800; font-size:0.84rem; color:#93C5FD;">📌 3040 정회원 가입 기준</span>
-            <span style="font-weight:900; font-size:0.88rem; color:#6EE7B7;">만 28세 ~ 45세 · 신용 750점 이상</span>
-        </div>
-    """, unsafe_allow_html=True)
-
-    st.markdown("""
-        <div class="blind-teaser-box">
-            <div class="teaser-header">
-                <span style="font-weight:800; font-size:0.88rem; color:#F1F5F9;">✨ 실시간 활동 중인 검증 회원</span>
-                <span style="font-size:0.75rem; color:#60A5FA; font-weight:700;">프라이버시 블라인드 적용 중</span>
-            </div>
-            <div class="teaser-card">
-                <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop" class="teaser-avatar">
-                <div style="flex:1;">
-                    <div style="font-size:0.88rem; font-weight:800; color:#FFFFFF;">이*은 회원 (여 · 32세)</div>
-                    <div style="font-size:0.76rem; color:#94A3B8; margin-top:2px;">📍 서울 서초구 | IT 대기업 서비스기획자</div>
-                    <div style="margin-top:3px;"><span class="badge-job">네이버 계열 재직</span> <span class="badge-score">신용 890점</span></div>
-                </div>
-            </div>
-            <div class="teaser-card">
-                <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop" class="teaser-avatar">
-                <div style="flex:1;">
-                    <div style="font-size:0.88rem; font-weight:800; color:#FFFFFF;">김*현 회원 (남 · 36세)</div>
-                    <div style="font-size:0.76rem; color:#94A3B8; margin-top:2px;">📍 경기 성남 분당구 | 삼일회계법인 공인회계사</div>
-                    <div style="margin-top:3px;"><span class="badge-job">전문직(CPA)</span> <span class="badge-score">신용 920점</span></div>
-                </div>
             </div>
         </div>
     """, unsafe_allow_html=True)
@@ -547,15 +542,11 @@ if not st.session_state.user_id:
 
         st.markdown("##### 💼 커리어 및 신용 인증 (배지 부여)")
         j_job = st.text_input("직장명 및 직무", placeholder="예: 네이버 서비스기획 / 삼일회계법인 회계사", key="j_job")
-        
-        # 직장명 오타 실시간 감지 안내
         job_typos = audit_text_typos(j_job)
         if job_typos:
             st.caption(f"💡 표현 교정 안내: {', '.join(job_typos)}")
 
         j_intro = st.text_area("한 줄 자기소개 (가치관 및 지향하는 인연)", value="진중하고 품격 있는 인연을 희망합니다.", key="j_intro")
-        
-        # 소개글 오타 실시간 감지 안내
         intro_typos = audit_text_typos(j_intro)
         if intro_typos:
             st.caption(f"💡 소개글 맞춤법 안내: {', '.join(intro_typos)}")
@@ -640,20 +631,11 @@ else:
     me = st.session_state.user_info
 
     st.markdown(f"""
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom: 2px solid #334155; padding-bottom: 8px;">
-            <div style="font-size:1.1rem; font-weight:900; color:#FFFFFF;">💼 {BRAND_NAME_KR}</div>
-            <div style="font-size:0.75rem; font-weight:800; color:#3A86FF; letter-spacing:1px;">{BRAND_NAME_EN}</div>
+        <div class="app-header">
+            <div class="app-brand">💼 {BRAND_NAME_KR}</div>
+            <div style="font-size:0.8rem; font-weight:800; color:#38BDF8;">🎟️ 티켓 {me.get('ticket_count', 0)}장</div>
         </div>
     """, unsafe_allow_html=True)
-
-    t_col1, t_col2 = st.columns([1, 3])
-    with t_col1:
-        my_avatar = me.get("photo_url") or DEFAULT_AVATARS.get(me["gender"])
-        st.markdown(f'<img src="{my_avatar}" class="profile-avatar-clear">', unsafe_allow_html=True)
-    with t_col2:
-        st.markdown(f"#### **{me['name']}** ({me['gender']} · {me['age']}세)")
-        st.markdown(f'<span class="badge-job">💼 {me.get("job", "직장 인증")}</span> <span class="badge-score">🛡️ 신용 {me["credit_score"]}점</span>', unsafe_allow_html=True)
-        st.caption(f"📍 {me['region']} | 🎟️ 보유 티켓: {me.get('ticket_count', 0)}장")
 
     with st.expander("🚫 아는 사람 / 직장 동료 번호 차단 관리"):
         curr_blocks = me.get("blocked_phones") or []
@@ -668,7 +650,7 @@ else:
                 st.success(f"{clean_bp} 번호가 상호 차단되었습니다.")
                 st.rerun()
 
-    tabs_main = st.tabs(["💖 가치관 매칭 피드", "📬 신청 보관함", "👤 프로필 관리 및 사진"])
+    tabs_main = st.tabs(["✨ 추천 피드", "📬 신청 보관함", "👤 내 프로필"])
 
     my_ans_data = supabase.table("user_answers").select("question_num, answer_value").eq("user_id", me["id"]).execute().data
     my_answers = {item["question_num"]: item["answer_value"] for item in my_ans_data}
@@ -706,50 +688,61 @@ else:
             cand_scores.sort(key=lambda x: x[3], reverse=True)
 
             for cand, c_answers, common_keys, score in cand_scores:
-                with st.container():
-                    c1, c2, c3 = st.columns([1, 2.5, 1])
-                    with c1:
-                        c_img = cand.get("photo_url") or DEFAULT_AVATARS.get(cand["gender"])
-                        st.markdown(f'<img src="{c_img}" class="profile-avatar-blur">', unsafe_allow_html=True)
-                    with c2:
-                        st.markdown(f"**{cand['name'][0]}*님** ({cand['gender']} · {cand['age']}세)")
-                        st.markdown(f'<span class="badge-job">💼 {cand.get("job", "직장 인증")}</span> <span class="badge-score">신용 {cand["credit_score"]}점</span>', unsafe_allow_html=True)
-                        st.caption(f"📍 {cand['region']}")
-                        if cand.get("intro"):
-                            st.caption(f'"{cand["intro"]}"')
-                    with c3:
-                        st.metric("가치관 일치율", f"{score}%")
+                c_img = cand.get("photo_url") or DEFAULT_AVATARS.get(cand["gender"])
+                intro_txt = cand.get("intro") or "가치관과 라이프스타일이 통하는 소중한 인연을 기다립니다."
 
-                    with st.expander("🔍 가치관 5대 문항 대조표 보기"):
-                        for q_num in sorted(list(CORE_QUESTIONS_3040.keys())):
-                            q_text = CORE_QUESTIONS_3040[q_num]["text"]
-                            m_val = my_answers.get(q_num, "미응답")
-                            c_val = c_answers.get(q_num, "미응답")
-                            is_match = (m_val == c_val)
-                            match_label = "🟢 일치" if is_match else "⚪ 상이"
-                            st.markdown(f"**[{match_label}] {q_text}**")
-                            st.caption(f"• 내 답변: {m_val} | 상대방: {c_val}")
+                st.markdown(f"""
+                    <div class="feed-card">
+                        <div class="feed-img-box">
+                            <img src="{c_img}" class="feed-img-blur">
+                            <div class="feed-overlay"></div>
+                            <div class="feed-blind-tag">🔒 블라인드 보호 중</div>
+                            <div class="feed-match-badge">{score}% 매칭</div>
+                        </div>
+                        <div class="feed-content">
+                            <div class="feed-name-row">
+                                <span class="feed-name">{cand['name'][0]}*님</span>
+                                <span class="feed-age">{cand['age']}세 · {cand['region'].split()[0]}</span>
+                            </div>
+                            <div style="display:flex; gap:6px; flex-wrap:wrap; margin-bottom:10px;">
+                                <span class="badge-pill-job">💼 {cand.get('job', '전문직/대기업')}</span>
+                                <span class="badge-pill-score">🛡️ 신용 {cand['credit_score']}점</span>
+                            </div>
+                            <div class="feed-intro">"{intro_txt}"</div>
+                        </div>
+                    </div>
+                """, unsafe_allow_html=True)
 
-                    req_status = sent_dict.get(cand["id"])
-                    if req_status == "PENDING":
-                        st.button(f"⏳ 대화 수락 대기중 ({cand['name'][0]}*님)", key=f"feed_btn_{cand['id']}", disabled=True)
-                    elif req_status == "ACCEPTED":
-                        st.success("🎉 매칭 성공! 보관함에서 선명한 프로필과 연락처를 확인하세요.")
-                    else:
-                        if st.button("💌 대화 신청 (티켓 1장 차감)", key=f"feed_btn_{cand['id']}"):
-                            if me.get("ticket_count", 0) <= 0:
-                                st.error("티켓이 부족합니다.")
-                            else:
-                                supabase.table("users").update({"ticket_count": me["ticket_count"] - 1}).eq("id", me["id"]).execute()
-                                supabase.table("match_requests").insert({
-                                    "sender_id": me["id"],
-                                    "receiver_id": cand["id"],
-                                    "status": "PENDING",
-                                    "payment_status": "PAID"
-                                }).execute()
-                                send_aligo_notice_sms(cand["phone"], f"{me['name'][0]}* 님으로부터 가치관 기반 대화 신청이 도착했습니다.")
-                                st.rerun()
-                    st.divider()
+                with st.expander("🔍 5대 가치관 상세 대조표"):
+                    for q_num in sorted(list(CORE_QUESTIONS_3040.keys())):
+                        q_text = CORE_QUESTIONS_3040[q_num]["text"]
+                        m_val = my_answers.get(q_num, "미응답")
+                        c_val = c_answers.get(q_num, "미응답")
+                        is_match = (m_val == c_val)
+                        match_label = "🟢 일치" if is_match else "⚪ 상이"
+                        st.markdown(f"**[{match_label}] {q_text}**")
+                        st.caption(f"• 내 답변: {m_val} | 상대방: {c_val}")
+
+                req_status = sent_dict.get(cand["id"])
+                if req_status == "PENDING":
+                    st.button(f"⏳ 대화 수락 대기중 ({cand['name'][0]}*님)", key=f"feed_btn_{cand['id']}", disabled=True)
+                elif req_status == "ACCEPTED":
+                    st.success("🎉 매칭 성공! 보관함에서 선명한 원본 사진을 확인하세요.")
+                else:
+                    if st.button("💌 대화 신청 (티켓 1장 차감)", key=f"feed_btn_{cand['id']}"):
+                        if me.get("ticket_count", 0) <= 0:
+                            st.error("티켓이 부족합니다.")
+                        else:
+                            supabase.table("users").update({"ticket_count": me["ticket_count"] - 1}).eq("id", me["id"]).execute()
+                            supabase.table("match_requests").insert({
+                                "sender_id": me["id"],
+                                "receiver_id": cand["id"],
+                                "status": "PENDING",
+                                "payment_status": "PAID"
+                            }).execute()
+                            send_aligo_notice_sms(cand["phone"], f"{me['name'][0]}* 님으로부터 가치관 기반 대화 신청이 도착했습니다.")
+                            st.rerun()
+                st.write("")
 
     with tabs_main[1]:
         inbox_1, inbox_2 = st.tabs(["내가 보낸 신청", "나에게 온 신청"])
@@ -762,11 +755,17 @@ else:
                 for req in sent_list:
                     rcv = supabase.table("users").select("*").eq("id", req["receiver_id"]).execute().data[0]
                     if req["status"] == "ACCEPTED":
-                        st.success(f"🎉 **{rcv['name']}** 님과 매칭이 성사되어 블라인드가 해제되었습니다!")
+                        st.success(f"🎉 **{rcv['name']}** 님과 매칭되어 블라인드가 해제되었습니다!")
                         r_img = rcv.get("photo_url") or DEFAULT_AVATARS.get(rcv["gender"])
-                        st.markdown(f'<img src="{r_img}" class="profile-avatar-clear">', unsafe_allow_html=True)
+                        st.markdown(f"""
+                            <div class="feed-card">
+                                <div class="feed-img-box">
+                                    <img src="{r_img}" class="feed-img-clear">
+                                </div>
+                            </div>
+                        """, unsafe_allow_html=True)
                         st.write(f"📞 안심 연락처: **{rcv['phone']}** | 💼 직장: **{rcv.get('job')}**")
-                        st.markdown(f'<a href="tel:{rcv["phone"]}">📞 전화 걸기</a>', unsafe_allow_html=True)
+                        st.markdown(f'<a href="tel:{rcv["phone"]}">📞 바로 전화 걸기</a>', unsafe_allow_html=True)
                     else:
                         st.write(f"• **{rcv['name'][0]}*님**에게 보낸 신청 | 상태: `{req['status']}`")
 
@@ -781,7 +780,13 @@ else:
                     if req["status"] == "ACCEPTED":
                         st.success("🤝 대화 수락 완료! 블라인드가 해제되었습니다.")
                         s_img = snd.get("photo_url") or DEFAULT_AVATARS.get(snd["gender"])
-                        st.markdown(f'<img src="{s_img}" class="profile-avatar-clear">', unsafe_allow_html=True)
+                        st.markdown(f"""
+                            <div class="feed-card">
+                                <div class="feed-img-box">
+                                    <img src="{s_img}" class="feed-img-clear">
+                                </div>
+                            </div>
+                        """, unsafe_allow_html=True)
                         st.write(f"📞 안심 연락처: **{snd['phone']}**")
                     elif req["status"] == "PENDING":
                         col_ac, col_re = st.columns(2)
@@ -797,7 +802,16 @@ else:
                     st.divider()
 
     with tabs_main[2]:
-        st.markdown("##### ✏️ 자기소개 및 직장 정보 수정")
+        my_avatar = me.get("photo_url") or DEFAULT_AVATARS.get(me["gender"])
+        st.markdown(f"""
+            <div style="text-align:center; padding:10px 0 20px 0;">
+                <img src="{my_avatar}" style="width:110px; height:110px; border-radius:50%; object-fit:cover; border:3px solid #3B82F6;">
+                <h3 style="margin:10px 0 4px 0; color:#FFFFFF;">{me['name']} ({me['gender']} · {me['age']}세)</h3>
+                <div style="font-size:0.85rem; color:#94A3B8;">📍 {me['region']} | 💼 {me.get('job')}</div>
+            </div>
+        """, unsafe_allow_html=True)
+
+        st.markdown("##### ✏️ 직장 및 소개글 수정")
         edit_job = st.text_input("직장명 및 직무 수정", value=me.get("job", ""), key="edit_job")
         job_errs = audit_text_typos(edit_job)
         if job_errs:
@@ -821,7 +835,6 @@ else:
 
         st.markdown("---")
         st.markdown("##### 📸 프로필 사진 등록")
-        st.caption("등록된 사진은 매칭 전까지 실루엣 블러 처리되어 안전하게 보호되며, 상호 수락 시에만 상대방에게 선명하게 공개됩니다.")
         new_avatar = st.file_uploader("사진 파일 선택 (JPG, PNG)", type=["jpg", "png", "jpeg"], key="up_avatar")
         if new_avatar and st.button("사진 등록 및 저장"):
             f_ext = new_avatar.name.split(".")[-1].lower()
