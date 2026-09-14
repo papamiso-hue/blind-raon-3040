@@ -44,6 +44,29 @@ ALIGO_API_KEY = "a2d6ej9asoilb20w66tmw6zw3qqp7shk"
 ALIGO_USER_ID = "equivision"
 ALIGO_SENDER = "01030383349"
 
+# 4. 플랫폼 전용 맞춤법/오타 검증 규칙
+PLATFORM_TYPO_RULES = {
+    r"안녕하새요": "안녕하세요",
+    r"결재": "결제(이용권/티켓 결제)",
+    r"됍니다": "됩니다",
+    r"되요": "돼요",
+    r"뵈요": "봬요",
+    r"몇일": "며칠",
+    r"바램": "바람",
+    r"어의없": "어이없",
+    r"신용점숫": "신용점수"
+}
+
+def audit_text_typos(text: str):
+    """입력된 텍스트에서 오탈자 및 부적절한 표현 감지"""
+    if not text:
+        return []
+    warnings = []
+    for pattern, correct in PLATFORM_TYPO_RULES.items():
+        if re.search(pattern, text):
+            warnings.append(f"'{pattern}' ➡️ '{correct}'")
+    return warnings
+
 KOREA_REGIONS = {
     "서울특별시": [
         "강남구", "강동구", "강북구", "강서구", "관악구", "광진구", "구로구", "금천구",
@@ -377,7 +400,7 @@ if "sms_verified_phone" not in st.session_state:
 if "sms_is_verified" not in st.session_state:
     st.session_state.sms_is_verified = False
 
-# --- 1. 로그인 / 가입 화면 ---
+# --- 1. 로그인 / 신규 가입 화면 ---
 if not st.session_state.user_id:
     st.markdown(f"""
         <div class="hero-box">
@@ -524,6 +547,19 @@ if not st.session_state.user_id:
 
         st.markdown("##### 💼 커리어 및 신용 인증 (배지 부여)")
         j_job = st.text_input("직장명 및 직무", placeholder="예: 네이버 서비스기획 / 삼일회계법인 회계사", key="j_job")
+        
+        # 직장명 오타 실시간 감지 안내
+        job_typos = audit_text_typos(j_job)
+        if job_typos:
+            st.caption(f"💡 표현 교정 안내: {', '.join(job_typos)}")
+
+        j_intro = st.text_area("한 줄 자기소개 (가치관 및 지향하는 인연)", value="진중하고 품격 있는 인연을 희망합니다.", key="j_intro")
+        
+        # 소개글 오타 실시간 감지 안내
+        intro_typos = audit_text_typos(j_intro)
+        if intro_typos:
+            st.caption(f"💡 소개글 맞춤법 안내: {', '.join(intro_typos)}")
+
         j_credit = st.number_input("공인 신용점수 (750점 이상 필수)", 0, 1000, 830, key="j_credit")
         j_doc = st.file_uploader("직장/소득/신용 증빙 서류 첨부 (명함, 사원증, 토스 신용캡처 등)", type=["jpg", "png", "pdf"], key="j_doc")
 
@@ -578,7 +614,7 @@ if not st.session_state.user_id:
                         "last_login_at": now_utc,
                         "job": j_job.strip() if j_job else "전문직/대기업",
                         "hobbies": "취미 및 여가",
-                        "intro": "진중하고 품격 있는 인연을 희망합니다.",
+                        "intro": j_intro.strip(),
                         "is_admin": False,
                         "is_suspended": False
                     }).execute().data[0]
@@ -632,7 +668,7 @@ else:
                 st.success(f"{clean_bp} 번호가 상호 차단되었습니다.")
                 st.rerun()
 
-    tabs_main = st.tabs(["💖 가치관 매칭 피드", "📬 신청 보관함", "👤 프로필 사진 등록"])
+    tabs_main = st.tabs(["💖 가치관 매칭 피드", "📬 신청 보관함", "👤 프로필 관리 및 사진"])
 
     my_ans_data = supabase.table("user_answers").select("question_num, answer_value").eq("user_id", me["id"]).execute().data
     my_answers = {item["question_num"]: item["answer_value"] for item in my_ans_data}
@@ -679,6 +715,8 @@ else:
                         st.markdown(f"**{cand['name'][0]}*님** ({cand['gender']} · {cand['age']}세)")
                         st.markdown(f'<span class="badge-job">💼 {cand.get("job", "직장 인증")}</span> <span class="badge-score">신용 {cand["credit_score"]}점</span>', unsafe_allow_html=True)
                         st.caption(f"📍 {cand['region']}")
+                        if cand.get("intro"):
+                            st.caption(f'"{cand["intro"]}"')
                     with c3:
                         st.metric("가치관 일치율", f"{score}%")
 
@@ -759,6 +797,29 @@ else:
                     st.divider()
 
     with tabs_main[2]:
+        st.markdown("##### ✏️ 자기소개 및 직장 정보 수정")
+        edit_job = st.text_input("직장명 및 직무 수정", value=me.get("job", ""), key="edit_job")
+        job_errs = audit_text_typos(edit_job)
+        if job_errs:
+            st.caption(f"💡 권장 수정: {', '.join(job_errs)}")
+
+        edit_intro = st.text_area("한 줄 소개 수정", value=me.get("intro", ""), key="edit_intro")
+        intro_errs = audit_text_typos(edit_intro)
+        if intro_errs:
+            st.caption(f"💡 권장 수정: {', '.join(intro_errs)}")
+
+        if st.button("프로필 정보 업데이트"):
+            supabase.table("users").update({
+                "job": edit_job.strip(),
+                "intro": edit_intro.strip()
+            }).eq("id", me["id"]).execute()
+            me["job"] = edit_job.strip()
+            me["intro"] = edit_intro.strip()
+            st.session_state.user_info = me
+            st.success("프로필 정보가 수정되었습니다.")
+            st.rerun()
+
+        st.markdown("---")
         st.markdown("##### 📸 프로필 사진 등록")
         st.caption("등록된 사진은 매칭 전까지 실루엣 블러 처리되어 안전하게 보호되며, 상호 수락 시에만 상대방에게 선명하게 공개됩니다.")
         new_avatar = st.file_uploader("사진 파일 선택 (JPG, PNG)", type=["jpg", "png", "jpeg"], key="up_avatar")
