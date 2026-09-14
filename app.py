@@ -36,7 +36,7 @@ st.markdown("""
 # 3. 서비스 기본 상수 정의
 BRAND_NAME_KR = "블라인드 라온"
 BRAND_NAME_EN = "BLIND RAON 3040"
-SITE_URL = "https://senior-matching-xtflgt6cnpp6q9o53z79pb.streamlit.app/"
+SITE_URL = "https://blind-raon-3040-xtwjdberufkkgwje2abbzq.streamlit.app"
 OG_IMAGE_URL = "https://images.unsplash.com/photo-1507679799987-c73779587ccf?q=80&w=1200&auto=format&fit=crop"
 KAKAO_CHAT_URL = "https://open.kakao.com/o/sRas35Li"
 
@@ -66,7 +66,6 @@ KOREA_REGIONS = {
     "세종특별자치시": ["세종시 전역"]
 }
 
-# 3040 특화 가치관 5대 질문 정의 (Q1 ~ Q5)
 CORE_QUESTIONS_3040 = {
     1: {
         "text": "1. 결혼 희망 시점 및 방향?",
@@ -90,53 +89,63 @@ CORE_QUESTIONS_3040 = {
     }
 }
 
-# 다크 네이비 & 모던 사파이어 3040 전용 UI 스타일링
+# --- 3040 모던 딥 네이비 & 사파이어 테마 CSS ---
 st.markdown("""
     <style>
-    .block-container { 
-        padding-top: 2.0rem !important; 
-        padding-bottom: 3.5rem !important; 
-        max-width: 780px; 
+    .stApp {
+        background-color: #0B0F19 !important;
+        color: #F1F5F9 !important;
+        font-family: -apple-system, BlinkMacSystemFont, "Pretendard", "Segoe UI", Roboto, sans-serif;
     }
+    .block-container { 
+        padding-top: 1.8rem !important; 
+        padding-bottom: 3.5rem !important; 
+        max-width: 620px !important; 
+    }
+
     .hero-box {
-        background: linear-gradient(135deg, #0B132B 0%, #1C2541 50%, #0B132B 100%);
-        border: 2px solid #3A86FF;
-        border-radius: 16px;
-        padding: 24px 18px 20px 18px;
+        background: linear-gradient(145deg, #111827 0%, #0F172A 60%, #1E293B 100%);
+        border: 1px solid rgba(59, 130, 246, 0.4);
+        border-radius: 18px;
+        padding: 26px 20px 22px 20px;
         text-align: center;
-        margin-bottom: 0.9rem;
-        box-shadow: 0 10px 30px rgba(58, 134, 255, 0.2);
+        margin-bottom: 1rem;
+        box-shadow: 0 10px 30px -10px rgba(37, 99, 235, 0.3);
     }
     .hero-badge {
-        display: inline-block;
-        background: linear-gradient(90deg, #3A86FF 0%, #60A5FA 100%);
-        color: #FFFFFF !important;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        background: rgba(37, 99, 235, 0.15);
+        border: 1px solid rgba(96, 165, 250, 0.4);
+        color: #60A5FA !important;
         font-size: 0.72rem;
-        font-weight: 900;
-        letter-spacing: 2.5px;
+        font-weight: 800;
+        letter-spacing: 2px;
         padding: 4px 12px;
-        border-radius: 20px;
-        text-transform: uppercase;
-        margin-bottom: 10px;
+        border-radius: 30px;
+        margin-bottom: 12px;
     }
     .hero-title {
-        font-size: 2.0rem;
+        font-size: 2.1rem;
         font-weight: 900;
         color: #FFFFFF !important;
-        letter-spacing: -0.5px;
-        line-height: 1.2;
-        margin-bottom: 8px;
+        letter-spacing: -0.8px;
+        line-height: 1.25;
+        margin-bottom: 10px;
     }
     .hero-subtitle {
-        font-size: 1.05rem;
-        font-weight: 700;
-        color: #E2E8F0 !important;
-        line-height: 1.5;
+        font-size: 1.0rem;
+        font-weight: 600;
+        color: #CBD5E1 !important;
+        line-height: 1.55;
         word-break: keep-all;
     }
     .hero-highlight {
-        color: #60A5FA !important;
+        color: #38BDF8 !important;
+        font-weight: 800;
     }
+
     .promise-grid {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
@@ -144,80 +153,166 @@ st.markdown("""
         margin-bottom: 1rem;
     }
     .promise-card {
-        background: #1E293B !important;
-        border: 1.5px solid #334155 !important;
-        border-radius: 10px;
-        padding: 12px 6px;
+        background: #111827 !important;
+        border: 1px solid #1F2937 !important;
+        border-radius: 12px;
+        padding: 14px 6px;
         text-align: center;
     }
+    .promise-icon {
+        font-size: 1.4rem;
+        margin-bottom: 4px;
+    }
     .promise-title {
-        font-size: 0.85rem;
+        font-size: 0.84rem;
         font-weight: 800;
-        color: #FFFFFF !important;
+        color: #F8FAFC !important;
     }
     .promise-desc {
-        font-size: 0.72rem;
+        font-size: 0.70rem;
         color: #94A3B8 !important;
-        margin-top: 3px;
+        margin-top: 2px;
     }
+
     .criteria-box {
-        background: #1E293B;
-        border: 1.5px solid #3A86FF;
-        border-radius: 12px;
-        padding: 14px 16px;
-        margin-bottom: 1rem;
+        background: rgba(15, 23, 42, 0.8);
+        border: 1px solid #334155;
+        border-radius: 10px;
+        padding: 10px 16px;
+        margin-bottom: 1.2rem;
         display: flex;
         align-items: center;
         justify-content: space-between;
     }
-    .profile-avatar-blur {
-        width: 76px;
-        height: 76px;
+
+    .blind-teaser-box {
+        background: #111827;
+        border: 1px solid #1F2937;
+        border-radius: 14px;
+        padding: 16px;
+        margin-bottom: 1.4rem;
+    }
+    .teaser-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 12px;
+    }
+    .teaser-card {
+        background: #1E293B;
+        border: 1px solid #334155;
+        border-radius: 10px;
+        padding: 10px 14px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 8px;
+    }
+    .teaser-avatar {
+        width: 48px;
+        height: 48px;
         border-radius: 50%;
-        object-fit: cover;
-        border: 2.5px solid #3A86FF;
-        filter: blur(6.5px);
-        transform: scale(0.96);
+        filter: blur(5px);
+        border: 1.5px solid #3B82F6;
     }
-    .profile-avatar-clear {
-        width: 76px;
-        height: 76px;
-        border-radius: 50%;
-        object-fit: cover;
-        border: 2.5px solid #10B981;
+
+    div[data-baseweb="tab-list"] {
+        background-color: #111827 !important;
+        padding: 4px;
+        border-radius: 10px;
+        gap: 4px;
+        border: 1px solid #1F2937 !important;
+        margin-bottom: 1.2rem;
     }
-    .badge-career {
-        display: inline-block;
-        background: #1E3A8A;
-        color: #93C5FD !important;
-        font-size: 0.72rem;
-        font-weight: 800;
-        padding: 2px 8px;
-        border-radius: 4px;
-        border: 1px solid #3B82F6;
-        margin-right: 4px;
-        margin-top: 4px;
+    div[data-baseweb="tab"] {
+        flex: 1;
+        height: 44px;
+        border-radius: 8px !important;
+        background-color: transparent !important;
+        color: #94A3B8 !important;
+        font-weight: 700 !important;
+        font-size: 0.92rem !important;
+        border: none !important;
+        display: flex;
+        justify-content: center;
+        align-items: center;
     }
-    .badge-credit {
-        display: inline-block;
-        background: #064E3B;
-        color: #6EE7B7 !important;
-        font-size: 0.72rem;
-        font-weight: 800;
-        padding: 2px 8px;
-        border-radius: 4px;
-        border: 1px solid #10B981;
+    div[data-baseweb="tab"][aria-selected="true"] {
+        background-color: #2563EB !important;
+        color: #FFFFFF !important;
+        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35);
     }
+    div[data-baseweb="tab-border"] {
+        display: none !important;
+    }
+
+    div[data-baseweb="input"] {
+        background-color: #111827 !important;
+        border: 1.5px solid #1F2937 !important;
+        border-radius: 10px !important;
+    }
+    div[data-baseweb="input"]:focus-within {
+        border-color: #3B82F6 !important;
+    }
+    div[data-baseweb="input"] input {
+        color: #FFFFFF !important;
+    }
+    label[data-testid="stWidgetLabel"] p {
+        color: #E2E8F0 !important;
+        font-weight: 700;
+        font-size: 0.88rem;
+    }
+
     .stButton>button { 
         width: 100%; 
         border-radius: 10px; 
         font-weight: 800; 
         height: 3.2rem;
-        font-size: 1.05rem;
-        border: 2px solid #3A86FF !important;
-        background-color: #0B132B !important;
+        font-size: 1.02rem;
+        border: none !important;
+        background: linear-gradient(90deg, #2563EB 0%, #1D4ED8 100%) !important;
         color: #FFFFFF !important;
+        box-shadow: 0 4px 14px rgba(37, 99, 235, 0.3);
     }
+    .stButton>button:hover {
+        background: linear-gradient(90deg, #3B82F6 0%, #2563EB 100%) !important;
+    }
+
+    .badge-job {
+        background: rgba(37, 99, 235, 0.2);
+        color: #93C5FD;
+        border: 1px solid rgba(59, 130, 246, 0.4);
+        padding: 2px 8px;
+        border-radius: 4px;
+        font-size: 0.72rem;
+        font-weight: 700;
+    }
+    .badge-score {
+        background: rgba(16, 185, 129, 0.15);
+        color: #6EE7B7;
+        border: 1px solid rgba(16, 185, 129, 0.35);
+        padding: 2px 8px;
+        border-radius: 4px;
+        font-size: 0.72rem;
+        font-weight: 700;
+    }
+    .profile-avatar-blur {
+        width: 74px;
+        height: 74px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid #3B82F6;
+        filter: blur(6px);
+        transform: scale(0.96);
+    }
+    .profile-avatar-clear {
+        width: 74px;
+        height: 74px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid #10B981;
+    }
+
     #MainMenu {visibility: hidden !important;}
     footer {visibility: hidden !important;}
     header {visibility: hidden !important;}
@@ -282,13 +377,13 @@ if "sms_verified_phone" not in st.session_state:
 if "sms_is_verified" not in st.session_state:
     st.session_state.sms_is_verified = False
 
-# --- 1. 로그인 및 회원가입 화면 ---
+# --- 1. 로그인 / 가입 화면 ---
 if not st.session_state.user_id:
     st.markdown(f"""
         <div class="hero-box">
-            <div class="hero-badge">3040 High-End Social Networking</div>
+            <div class="hero-badge">🔒 3040 PRIVATE BLIND CLUB</div>
             <div class="hero-title">💼 {BRAND_NAME_KR}</div>
-            <div class="hero-subtitle">가벼운 데이팅은 지치고, 결정사는 부담스러운 3040을 위한<br>
+            <div class="hero-subtitle">가벼운 만남은 지치고, 결정사는 부담스러운 3040을 위한<br>
             <span class="hero-highlight">직장·소득·신용 3중 검증 기반 프라이빗 매칭</span></div>
         </div>
     """, unsafe_allow_html=True)
@@ -296,17 +391,17 @@ if not st.session_state.user_id:
     st.markdown("""
         <div class="promise-grid">
             <div class="promise-card">
-                <div style="font-size:1.3rem;">🛡️</div>
-                <div class="promise-title">직장·신용 검증</div>
-                <div class="promise-desc">750점+ 공인 인증</div>
+                <div class="promise-icon">🛡️</div>
+                <div class="promise-title">직장·소득 검증</div>
+                <div class="promise-desc">명함/원천징수/750점+</div>
             </div>
             <div class="promise-card">
-                <div style="font-size:1.3rem;">🚫</div>
-                <div class="promise-title">지인 번호 완벽차단</div>
-                <div class="promise-desc">직장 동료/지인 미노출</div>
+                <div class="promise-icon">🚫</div>
+                <div class="promise-title">직장·지인 완벽차단</div>
+                <div class="promise-desc">회사 동료 상호 미노출</div>
             </div>
             <div class="promise-card">
-                <div style="font-size:1.3rem;">🔒</div>
+                <div class="promise-icon">🔒</div>
                 <div class="promise-title">블라인드 프로필</div>
                 <div class="promise-desc">상호 수락 시 얼굴 공개</div>
             </div>
@@ -315,8 +410,33 @@ if not st.session_state.user_id:
 
     st.markdown("""
         <div class="criteria-box">
-            <span style="font-weight:800; font-size:0.86rem; color:#93C5FD;">📌 3040 정회원 입회 기준</span>
-            <span style="font-weight:900; font-size:0.92rem; color:#6EE7B7;">만 28세 ~ 45세 · 신용 750점 이상</span>
+            <span style="font-weight:800; font-size:0.84rem; color:#93C5FD;">📌 3040 정회원 가입 기준</span>
+            <span style="font-weight:900; font-size:0.88rem; color:#6EE7B7;">만 28세 ~ 45세 · 신용 750점 이상</span>
+        </div>
+    """, unsafe_allow_html=True)
+
+    st.markdown("""
+        <div class="blind-teaser-box">
+            <div class="teaser-header">
+                <span style="font-weight:800; font-size:0.88rem; color:#F1F5F9;">✨ 실시간 활동 중인 검증 회원</span>
+                <span style="font-size:0.75rem; color:#60A5FA; font-weight:700;">프라이버시 블라인드 적용 중</span>
+            </div>
+            <div class="teaser-card">
+                <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop" class="teaser-avatar">
+                <div style="flex:1;">
+                    <div style="font-size:0.88rem; font-weight:800; color:#FFFFFF;">이*은 회원 (여 · 32세)</div>
+                    <div style="font-size:0.76rem; color:#94A3B8; margin-top:2px;">📍 서울 서초구 | IT 대기업 서비스기획자</div>
+                    <div style="margin-top:3px;"><span class="badge-job">네이버 계열 재직</span> <span class="badge-score">신용 890점</span></div>
+                </div>
+            </div>
+            <div class="teaser-card">
+                <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop" class="teaser-avatar">
+                <div style="flex:1;">
+                    <div style="font-size:0.88rem; font-weight:800; color:#FFFFFF;">김*현 회원 (남 · 36세)</div>
+                    <div style="font-size:0.76rem; color:#94A3B8; margin-top:2px;">📍 경기 성남 분당구 | 삼일회계법인 공인회계사</div>
+                    <div style="margin-top:3px;"><span class="badge-job">전문직(CPA)</span> <span class="badge-score">신용 920점</span></div>
+                </div>
+            </div>
         </div>
     """, unsafe_allow_html=True)
 
@@ -403,7 +523,7 @@ if not st.session_state.user_id:
         j_region = f"{j_sido} {j_sigungu}"
 
         st.markdown("##### 💼 커리어 및 신용 인증 (배지 부여)")
-        j_job = st.text_input("직장명 및 직무", placeholder="예: 네이버 서비스기획 / 삼일회계법인 회계사 / 판교 IT 개발자", key="j_job")
+        j_job = st.text_input("직장명 및 직무", placeholder="예: 네이버 서비스기획 / 삼일회계법인 회계사", key="j_job")
         j_credit = st.number_input("공인 신용점수 (750점 이상 필수)", 0, 1000, 830, key="j_credit")
         j_doc = st.file_uploader("직장/소득/신용 증빙 서류 첨부 (명함, 사원증, 토스 신용캡처 등)", type=["jpg", "png", "pdf"], key="j_doc")
 
@@ -496,10 +616,9 @@ else:
         st.markdown(f'<img src="{my_avatar}" class="profile-avatar-clear">', unsafe_allow_html=True)
     with t_col2:
         st.markdown(f"#### **{me['name']}** ({me['gender']} · {me['age']}세)")
-        st.markdown(f'<span class="badge-career">💼 {me.get("job", "직장 인증")}</span> <span class="badge-credit">🛡️ 신용 {me["credit_score"]}점</span>', unsafe_allow_html=True)
+        st.markdown(f'<span class="badge-job">💼 {me.get("job", "직장 인증")}</span> <span class="badge-score">🛡️ 신용 {me["credit_score"]}점</span>', unsafe_allow_html=True)
         st.caption(f"📍 {me['region']} | 🎟️ 보유 티켓: {me.get('ticket_count', 0)}장")
 
-    # 지인 일괄 차단 설정
     with st.expander("🚫 아는 사람 / 직장 동료 번호 차단 관리"):
         curr_blocks = me.get("blocked_phones") or []
         b_input = st.text_input("차단할 휴대폰 번호 (- 제외)", placeholder="예: 01098765432", key="in_block_p")
@@ -515,11 +634,9 @@ else:
 
     tabs_main = st.tabs(["💖 가치관 매칭 피드", "📬 신청 보관함", "👤 프로필 사진 등록"])
 
-    # 나의 5대 가치관 답변 로드
     my_ans_data = supabase.table("user_answers").select("question_num, answer_value").eq("user_id", me["id"]).execute().data
     my_answers = {item["question_num"]: item["answer_value"] for item in my_ans_data}
 
-    # 탭 1: 이성 추천 피드 (블라인드 실루엣 모드)
     with tabs_main[0]:
         target_gender = "여" if me["gender"] == "남" else "남"
         raw_candidates = supabase.table("users").select("*").eq("gender", target_gender).eq("is_suspended", False).execute().data
@@ -535,7 +652,6 @@ else:
                 continue
             candidates.append(cand)
 
-        # 내가 이미 보낸 요청 확인
         sent_reqs = supabase.table("match_requests").select("receiver_id, status").eq("sender_id", me["id"]).execute().data
         sent_dict = {req["receiver_id"]: req["status"] for req in sent_reqs}
 
@@ -557,18 +673,16 @@ else:
                 with st.container():
                     c1, c2, c3 = st.columns([1, 2.5, 1])
                     with c1:
-                        # 매칭 전까지는 블라인드 블러 처리
                         c_img = cand.get("photo_url") or DEFAULT_AVATARS.get(cand["gender"])
                         st.markdown(f'<img src="{c_img}" class="profile-avatar-blur">', unsafe_allow_html=True)
                     with c2:
                         st.markdown(f"**{cand['name'][0]}*님** ({cand['gender']} · {cand['age']}세)")
-                        st.markdown(f'<span class="badge-career">💼 {cand.get("job", "직장 인증")}</span> <span class="badge-credit">신용 {cand["credit_score"]}점</span>', unsafe_allow_html=True)
+                        st.markdown(f'<span class="badge-job">💼 {cand.get("job", "직장 인증")}</span> <span class="badge-score">신용 {cand["credit_score"]}점</span>', unsafe_allow_html=True)
                         st.caption(f"📍 {cand['region']}")
                     with c3:
                         st.metric("가치관 일치율", f"{score}%")
 
-                    # 5대 가치관 문답 대조
-                    with st.expander(f"🔍 가치관 5대 문항 대조표 보기"):
+                    with st.expander("🔍 가치관 5대 문항 대조표 보기"):
                         for q_num in sorted(list(CORE_QUESTIONS_3040.keys())):
                             q_text = CORE_QUESTIONS_3040[q_num]["text"]
                             m_val = my_answers.get(q_num, "미응답")
@@ -582,9 +696,9 @@ else:
                     if req_status == "PENDING":
                         st.button(f"⏳ 대화 수락 대기중 ({cand['name'][0]}*님)", key=f"feed_btn_{cand['id']}", disabled=True)
                     elif req_status == "ACCEPTED":
-                        st.success(f"🎉 매칭 성공! 보관함에서 선명한 프로필과 연락처를 확인하세요.")
+                        st.success("🎉 매칭 성공! 보관함에서 선명한 프로필과 연락처를 확인하세요.")
                     else:
-                        if st.button(f"💌 대화 신청 (티켓 1장 차감)", key=f"feed_btn_{cand['id']}"):
+                        if st.button("💌 대화 신청 (티켓 1장 차감)", key=f"feed_btn_{cand['id']}"):
                             if me.get("ticket_count", 0) <= 0:
                                 st.error("티켓이 부족합니다.")
                             else:
@@ -599,7 +713,6 @@ else:
                                 st.rerun()
                     st.divider()
 
-    # 탭 2: 보관함 (매칭 성공 시 블라인드 해제 & 원본 얼굴 공개)
     with tabs_main[1]:
         inbox_1, inbox_2 = st.tabs(["내가 보낸 신청", "나에게 온 신청"])
         
@@ -628,7 +741,7 @@ else:
                     snd = supabase.table("users").select("*").eq("id", req["sender_id"]).execute().data[0]
                     st.markdown(f"**{snd['name'][0]}*님** ({snd['gender']} · {snd['age']}세 · {snd.get('job')})")
                     if req["status"] == "ACCEPTED":
-                        st.success(f"🤝 대화 수락 완료! 블라인드가 해제되었습니다.")
+                        st.success("🤝 대화 수락 완료! 블라인드가 해제되었습니다.")
                         s_img = snd.get("photo_url") or DEFAULT_AVATARS.get(snd["gender"])
                         st.markdown(f'<img src="{s_img}" class="profile-avatar-clear">', unsafe_allow_html=True)
                         st.write(f"📞 안심 연락처: **{snd['phone']}**")
@@ -645,7 +758,6 @@ else:
                                 st.rerun()
                     st.divider()
 
-    # 탭 3: 프로필 사진 업로드
     with tabs_main[2]:
         st.markdown("##### 📸 프로필 사진 등록")
         st.caption("등록된 사진은 매칭 전까지 실루엣 블러 처리되어 안전하게 보호되며, 상호 수락 시에만 상대방에게 선명하게 공개됩니다.")
