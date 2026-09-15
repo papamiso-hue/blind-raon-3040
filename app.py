@@ -860,6 +860,7 @@ else:
                             }).execute()
                             send_aligo_notice_sms(cand["phone"], f"{me['name'][0]}* 님으로부터 가치관 기반 대화 신청이 도착했습니다.")
                             st.rerun()
+                st.caption("ℹ️ 대화 신청 시 티켓 1장이 사용되며, 상대방 거절/미응답 시 티켓은 자동 반환됩니다. (미사용 티켓은 7일 이내 100% 환불 가능)")           
                 st.write("")
 
     with tabs_main[1]:
