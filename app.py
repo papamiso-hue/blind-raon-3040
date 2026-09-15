@@ -6,6 +6,7 @@ import math
 import io
 import json
 import random
+import hashlib
 import requests
 from datetime import datetime, timedelta, timezone
 import pandas as pd
@@ -33,18 +34,27 @@ st.markdown("""
 </head>
 """, unsafe_allow_html=True)
 
-# 3. 서비스 기본 상수
+# 3. 서비스 기본 상수 및 보안 Secrets 연동
 BRAND_NAME_KR = "블라인드 라온"
 BRAND_NAME_EN = "BLIND RAON 3040"
 SITE_URL = "https://blind-raon-3040-xtwjdberufkkgwje2abbzq.streamlit.app"
 OG_IMAGE_URL = "https://images.unsplash.com/photo-1507679799987-c73779587ccf?q=80&w=1200&auto=format&fit=crop"
 KAKAO_CHAT_URL = "https://open.kakao.com/o/sRas35Li"
 
-ALIGO_API_KEY = "a2d6ej9asoilb20w66tmw6zw3qqp7shk"
-ALIGO_USER_ID = "equivision"
-ALIGO_SENDER = "01030383349"
+ALIGO_API_KEY = st.secrets["ALIGO_API_KEY"]
+ALIGO_USER_ID = st.secrets["ALIGO_USER_ID"]
+ALIGO_SENDER = st.secrets["ALIGO_SENDER"]
 
-# 4. 플랫폼 전용 맞춤법/오타 검증 규칙
+SUPABASE_URL = st.secrets["SUPABASE_URL"]
+SUPABASE_KEY = st.secrets["SUPABASE_KEY"]
+
+# 비밀번호 단방향 암호화 함수
+def hash_password(pwd: str) -> str:
+    if not pwd:
+        return ""
+    return hashlib.sha256(pwd.strip().encode("utf-8")).hexdigest()
+
+# 4. 맞춤법 및 오타 검증
 PLATFORM_TYPO_RULES = {
     r"안녕하새요": "안녕하세요",
     r"결재": "결제(이용권/티켓 결제)",
@@ -88,7 +98,6 @@ KOREA_REGIONS = {
     "세종특별자치시": ["세종시 전역"]
 }
 
-# 5. 3040 심층 가치관 75대 전수 문항
 QUESTIONS_75 = {
     1: {"category": "결혼관 및 가족 계획", "text": "1. 구체적인 결혼 희망 시점?", "options": ["1년 이내 빠른 결혼 희망", "1~2년 정도 진중한 연애 후 결정", "2~3년 이상 충분히 겪어본 후 결정", "혼인신고에 얽매이지 않는 진지한 연인 관계"]},
     2: {"category": "결혼관 및 가족 계획", "text": "2. 자녀 출산 계획?", "options": ["필수 (최소 1~2명 이상 희망)", "상호 합의에 따라 유연하게 결정", "딩크(DINK: 자녀 없이 둘만의 삶) 확고", "상대방의 뜻에 전적으로 맞춤"]},
@@ -259,7 +268,6 @@ st.markdown("""
     .promise-title { font-size: 0.8rem; font-weight: 800; color: #E2E8F0 !important; }
     .promise-desc { font-size: 0.68rem; color: #64748B !important; margin-top: 2px; }
 
-    /* 대형 세로형 프로필 매칭 카드 */
     .feed-card {
         position: relative;
         border-radius: 22px;
@@ -369,7 +377,6 @@ st.markdown("""
         font-style: italic;
     }
 
-    /* 탭 스타일 */
     div[data-baseweb="tab-list"] {
         background-color: rgba(15, 23, 42, 0.8) !important;
         padding: 5px;
@@ -395,7 +402,6 @@ st.markdown("""
     }
     div[data-baseweb="tab-border"] { display: none !important; }
 
-    /* 입력창 및 버튼 */
     div[data-baseweb="input"] {
         background-color: rgba(15, 23, 42, 0.9) !important;
         border: 1.5px solid #1E293B !important;
@@ -425,9 +431,6 @@ st.markdown("""
     #MainMenu, footer, header { visibility: hidden !important; }
     </style>
 """, unsafe_allow_html=True)
-
-SUPABASE_URL = st.secrets["SUPABASE_URL"]
-SUPABASE_KEY = st.secrets["SUPABASE_KEY"]
 
 @st.cache_resource
 def get_supabase_client() -> Client:
@@ -484,6 +487,14 @@ if "sms_verified_phone" not in st.session_state:
 if "sms_is_verified" not in st.session_state:
     st.session_state.sms_is_verified = False
 
+# 비밀번호 찾기 세션 상태
+if "reset_sms_code" not in st.session_state:
+    st.session_state.reset_sms_code = None
+if "reset_verified_phone" not in st.session_state:
+    st.session_state.reset_verified_phone = None
+if "reset_target_uid" not in st.session_state:
+    st.session_state.reset_target_uid = None
+
 # --- 1. 로그인 / 신규 가입 화면 ---
 if not st.session_state.user_id:
     st.markdown(f"""
@@ -527,24 +538,81 @@ if not st.session_state.user_id:
             if not login_name.strip() or not clean_p or not login_pwd.strip():
                 st.error("성명, 휴대폰 번호, 비밀번호를 모두 입력해 주세요.")
             else:
+                # 암호화 해시 및 평문 동시 비교 (기존 가입자 자동 호환)
+                hashed_input = hash_password(login_pwd)
                 res = supabase.table("users").select("*")\
                     .eq("name", login_name.strip())\
                     .eq("phone", clean_p)\
-                    .eq("password", login_pwd.strip())\
                     .execute()
+
                 if res.data:
                     u = res.data[0]
-                    if u.get("is_suspended"):
-                        st.error("🚫 제재 조치된 계정입니다. 고객센터로 문의해 주세요.")
+                    stored_pwd = u.get("password", "")
+                    
+                    # 해시값 일치 또는 이전 평문 일치 여부 확인
+                    if stored_pwd == hashed_input or stored_pwd == login_pwd.strip():
+                        if u.get("is_suspended"):
+                            st.error("🚫 제재 조치된 계정입니다. 고객센터로 문의해 주세요.")
+                        else:
+                            # 이전 평문 비밀번호였던 경우, 암호화 해시로 자동 업그레이드
+                            now_utc = datetime.now(timezone.utc).isoformat()
+                            update_data = {"last_login_at": now_utc}
+                            if stored_pwd != hashed_input:
+                                update_data["password"] = hashed_input
+                                
+                            supabase.table("users").update(update_data).eq("id", u["id"]).execute()
+                            u["last_login_at"] = now_utc
+                            st.session_state.user_id = u["id"]
+                            st.session_state.user_info = u
+                            st.rerun()
                     else:
-                        now_utc = datetime.now(timezone.utc).isoformat()
-                        supabase.table("users").update({"last_login_at": now_utc}).eq("id", u["id"]).execute()
-                        u["last_login_at"] = now_utc
-                        st.session_state.user_id = u["id"]
-                        st.session_state.user_info = u
-                        st.rerun()
+                        st.error("비밀번호가 일치하지 않습니다.")
                 else:
                     st.error("일치하는 회원 정보를 찾을 수 없습니다.")
+
+        # 🔑 비밀번호 찾기 (SMS 인증 기반 재설정 창구)
+        with st.expander("🔑 비밀번호를 잊으셨나요? (간편 재설정)"):
+            st.caption("가입 시 등록한 성명과 휴대폰 번호로 인증 후 새 비밀번호를 설정할 수 있습니다.")
+            f_name = st.text_input("가입 성명", key="f_name")
+            col_fp1, col_fp2 = st.columns([2.5, 1.2])
+            with col_fp1:
+                f_phone = st.text_input("가입 휴대폰 번호", placeholder="01012345678", key="f_phone")
+            with col_fp2:
+                st.write("")
+                btn_find_sms = st.button("인증문자 발송", key="btn_find_sms")
+
+            clean_fp = re.sub(r'[^0-9]', '', f_phone.strip())
+            if btn_find_sms:
+                if not f_name.strip() or len(clean_fp) < 10:
+                    st.error("성명과 휴대폰 번호를 정확히 입력해 주세요.")
+                else:
+                    chk = supabase.table("users").select("id").eq("name", f_name.strip()).eq("phone", clean_fp).execute().data
+                    if not chk:
+                        st.error("등록된 회원 정보가 존재하지 않습니다.")
+                    else:
+                        code = str(random.randint(100000, 999999))
+                        st.session_state.reset_sms_code = code
+                        st.session_state.reset_verified_phone = clean_fp
+                        st.session_state.reset_target_uid = chk[0]["id"]
+                        send_aligo_sms(clean_fp, code)
+                        st.success("인증번호가 발송되었습니다. 아래에 입력해 주세요.")
+
+            if st.session_state.reset_sms_code:
+                in_fcode = st.text_input("문자 인증번호 6자리", key="in_find_code")
+                new_reset_pwd = st.text_input("새로운 간편 비밀번호 (4~6자리)", type="password", key="new_reset_pwd")
+                
+                if st.button("새 비밀번호로 변경 및 저장", key="btn_do_reset"):
+                    if in_fcode.strip() != st.session_state.reset_sms_code:
+                        st.error("인증번호가 일치하지 않습니다.")
+                    elif len(new_reset_pwd.strip()) < 4:
+                        st.error("비밀번호는 최소 4자리 이상이어야 합니다.")
+                    else:
+                        supabase.table("users").update({
+                            "password": hash_password(new_reset_pwd)
+                        }).eq("id", st.session_state.reset_target_uid).execute()
+                        st.session_state.reset_sms_code = None
+                        st.session_state.reset_target_uid = None
+                        st.success("🎉 비밀번호가 안전하게 재설정되었습니다! 새 비밀번호로 로그인해 주세요.")
 
     with tab_join:
         st.markdown("##### 👤 기본 인적사항 (만 28~45세 대상)")
@@ -645,10 +713,11 @@ if not st.session_state.user_id:
                     doc_url = f"{SUPABASE_URL}/storage/v1/object/public/credit-docs/{doc_name}"
                     now_utc = datetime.now(timezone.utc).isoformat()
 
+                    # 비밀번호 암호화 저장
                     new_u = supabase.table("users").insert({
                         "name": j_name.strip(),
                         "phone": clean_jp,
-                        "password": j_pwd.strip(),
+                        "password": hash_password(j_pwd),
                         "gender": j_gender,
                         "age": int(j_age),
                         "region": j_region,
@@ -905,7 +974,7 @@ else:
             st.success("사진이 등록되었습니다. 매칭 전에는 블라인드 보호가 자동 적용됩니다.")
             st.rerun()
 
-        # --- 🎯 [신규 추가] 3040 심층 가치관 진단 75문항 아코디언 영역 ---
+        # 🎯 3040 심층 가치관 진단 75문항 아코디언 영역
         st.markdown("---")
         st.markdown("#### 🎯 3040 심층 가치관 진단 (75문항)")
         st.caption("답변을 많이 채울수록 상대방과의 매칭 일치율 정확도가 비약적으로 향상됩니다.")
@@ -937,7 +1006,6 @@ else:
 
                 if st.button(f"💾 {cat_title.split('.')[1][:8]} 영역 답변 저장", key=f"btn_save_cat_{start_q}"):
                     for q_num, ans_val in cat_answers.items():
-                        # 기존 답변 존재 여부 확인 후 업데이트 또는 신규 추가
                         exist = supabase.table("user_answers").select("id").eq("user_id", me["id"]).eq("question_num", q_num).execute().data
                         if exist:
                             supabase.table("user_answers").update({"answer_value": ans_val}).eq("id", exist[0]["id"]).execute()
