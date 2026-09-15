@@ -48,13 +48,11 @@ ALIGO_SENDER = st.secrets["ALIGO_SENDER"]
 SUPABASE_URL = st.secrets["SUPABASE_URL"]
 SUPABASE_KEY = st.secrets["SUPABASE_KEY"]
 
-# 비밀번호 단방향 암호화 함수
 def hash_password(pwd: str) -> str:
     if not pwd:
         return ""
     return hashlib.sha256(pwd.strip().encode("utf-8")).hexdigest()
 
-# 4. 맞춤법 및 오타 검증
 PLATFORM_TYPO_RULES = {
     r"안녕하새요": "안녕하세요",
     r"결재": "결제(이용권/티켓 결제)",
@@ -180,7 +178,6 @@ QUESTIONS_75 = {
     75: {"category": "갈등 해결 및 관계·대화", "text": "75. 내가 생각하는 성공적인 결혼 생활이란?", "options": ["경제적 풍요와 사회적 성공을 함께 일구는 팀플레이", "세상 누구보다 편안한 내 편이 집에 있다는 정서적 안정", "서로의 자유와 성장을 응원하는 독립적인 동반자", "아이를 올바르게 키워 화목한 가정을 완성하는 것"]}
 }
 
-# --- 프리미엄 3040 리뉴얼 UI CSS ---
 st.markdown("""
     <style>
     @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
@@ -487,7 +484,6 @@ if "sms_verified_phone" not in st.session_state:
 if "sms_is_verified" not in st.session_state:
     st.session_state.sms_is_verified = False
 
-# 비밀번호 찾기 세션 상태
 if "reset_sms_code" not in st.session_state:
     st.session_state.reset_sms_code = None
 if "reset_verified_phone" not in st.session_state:
@@ -538,7 +534,6 @@ if not st.session_state.user_id:
             if not login_name.strip() or not clean_p or not login_pwd.strip():
                 st.error("성명, 휴대폰 번호, 비밀번호를 모두 입력해 주세요.")
             else:
-                # 암호화 해시 및 평문 동시 비교 (기존 가입자 자동 호환)
                 hashed_input = hash_password(login_pwd)
                 res = supabase.table("users").select("*")\
                     .eq("name", login_name.strip())\
@@ -549,12 +544,10 @@ if not st.session_state.user_id:
                     u = res.data[0]
                     stored_pwd = u.get("password", "")
                     
-                    # 해시값 일치 또는 이전 평문 일치 여부 확인
                     if stored_pwd == hashed_input or stored_pwd == login_pwd.strip():
                         if u.get("is_suspended"):
                             st.error("🚫 제재 조치된 계정입니다. 고객센터로 문의해 주세요.")
                         else:
-                            # 이전 평문 비밀번호였던 경우, 암호화 해시로 자동 업그레이드
                             now_utc = datetime.now(timezone.utc).isoformat()
                             update_data = {"last_login_at": now_utc}
                             if stored_pwd != hashed_input:
@@ -570,7 +563,6 @@ if not st.session_state.user_id:
                 else:
                     st.error("일치하는 회원 정보를 찾을 수 없습니다.")
 
-        # 🔑 비밀번호 찾기 (SMS 인증 기반 재설정 창구)
         with st.expander("🔑 비밀번호를 잊으셨나요? (간편 재설정)"):
             st.caption("가입 시 등록한 성명과 휴대폰 번호로 인증 후 새 비밀번호를 설정할 수 있습니다.")
             f_name = st.text_input("가입 성명", key="f_name")
@@ -705,15 +697,14 @@ if not st.session_state.user_id:
                 doc_ext = j_doc.name.split(".")[-1].lower()
                 doc_name = f"verify_{clean_jp}_{uuid.uuid4().hex[:6]}.{doc_ext}"
                 try:
+                    # Private 버킷에 안전 업로드
                     supabase.storage.from_("credit-docs").upload(
                         doc_name, 
                         j_doc.read(), 
                         {"content-type": "application/pdf" if doc_ext == "pdf" else f"image/{doc_ext}"}
                     )
-                    doc_url = f"{SUPABASE_URL}/storage/v1/object/public/credit-docs/{doc_name}"
                     now_utc = datetime.now(timezone.utc).isoformat()
 
-                    # 비밀번호 암호화 저장
                     new_u = supabase.table("users").insert({
                         "name": j_name.strip(),
                         "phone": clean_jp,
@@ -722,7 +713,7 @@ if not st.session_state.user_id:
                         "age": int(j_age),
                         "region": j_region,
                         "credit_score": int(j_credit),
-                        "credit_doc_url": doc_url,
+                        "credit_doc_url": doc_name,  # 파일 식별자 저장
                         "credit_status": "PENDING",
                         "is_verified": False,
                         "ticket_count": 3,
@@ -974,7 +965,6 @@ else:
             st.success("사진이 등록되었습니다. 매칭 전에는 블라인드 보호가 자동 적용됩니다.")
             st.rerun()
 
-        # 🎯 3040 심층 가치관 진단 75문항 아코디언 영역
         st.markdown("---")
         st.markdown("#### 🎯 3040 심층 가치관 진단 (75문항)")
         st.caption("답변을 많이 채울수록 상대방과의 매칭 일치율 정확도가 비약적으로 향상됩니다.")
@@ -1017,6 +1007,71 @@ else:
                             }).execute()
                     st.success("✅ 해당 영역의 가치관 답변이 성공적으로 저장되었습니다!")
                     st.rerun()
+
+    # 👑 [관리자 전용] 신원 서류 심사 및 승인 즉시 자동 파기 센터
+    if me.get("is_admin"):
+        st.markdown("---")
+        with st.expander("👑 [관리자 전용] 회원 서류 심사 및 즉시 파기 센터"):
+            pending_users = supabase.table("users").select("*").eq("credit_status", "PENDING").execute().data
+            if not pending_users:
+                st.success("현재 심사 대기 중인 신규 회원이 없습니다.")
+            else:
+                st.caption(f"총 {len(pending_users)}명의 승인 대기 서류가 있습니다. 확인 즉시 자동 파기됩니다.")
+                for pu in pending_users:
+                    st.markdown(f"**신청자:** {pu['name']} ({pu['gender']} · {pu['age']}세 · {pu.get('job')} · 신용 {pu['credit_score']}점)")
+                    st.caption(f"연락처: {pu['phone']}")
+                    
+                    doc_path = pu.get("credit_doc_url", "")
+                    if doc_path and not doc_path.startswith("["):
+                        try:
+                            # Private 버킷 임시 서명 URL 생성 (60초 유효)
+                            raw_path = doc_path.split("/")[-1]
+                            signed = supabase.storage.from_("credit-docs").create_signed_url(raw_path, 60)
+                            s_url = signed.get("signedURL") or signed.get("signedUrl")
+                            if s_url:
+                                st.markdown(f'<a href="{s_url}" target="_blank">📄 [안심 열람] 증빙서류 1회용 링크 열기 (60초 후 만료)</a>', unsafe_allow_html=True)
+                        except Exception as err:
+                            st.caption(f"서류 링크 생성 오류: {err}")
+
+                    col_ap, col_rj = st.columns(2)
+                    with col_ap:
+                        if st.button(f"✅ 승인 및 서류 영구 파기", key=f"btn_ap_{pu['id']}"):
+                            # 1. 스토리지 파일 완전 영구 삭제
+                            raw_fname = doc_path.split("/")[-1]
+                            try:
+                                supabase.storage.from_("credit-docs").remove([raw_fname])
+                            except Exception:
+                                pass
+                            
+                            # 2. DB 상태 승인 전환 및 URL 영구 소거
+                            supabase.table("users").update({
+                                "is_verified": True,
+                                "credit_status": "VERIFIED",
+                                "credit_doc_url": "[심사 완료 후 안전 파기됨]"
+                            }).eq("id", pu["id"]).execute()
+
+                            send_aligo_notice_sms(pu["phone"], "제출하신 신원 및 서류 검증이 통과되었습니다. 제출 서류는 안전하게 영구 파기되었습니다.")
+                            st.success(f"{pu['name']} 님이 정회원으로 승인되었으며, 서류가 안전하게 영구 파기되었습니다.")
+                            st.rerun()
+
+                    with col_rj:
+                        if st.button(f"🚫 반려 및 서류 파기", key=f"btn_rj_{pu['id']}"):
+                            raw_fname = doc_path.split("/")[-1]
+                            try:
+                                supabase.storage.from_("credit-docs").remove([raw_fname])
+                            except Exception:
+                                pass
+                            
+                            supabase.table("users").update({
+                                "is_verified": False,
+                                "credit_status": "REJECTED",
+                                "credit_doc_url": "[반려 후 안전 파기됨]"
+                            }).eq("id", pu["id"]).execute()
+
+                            send_aligo_notice_sms(pu["phone"], "제출하신 증빙 서류가 기준에 미달하여 반려되었습니다. 다시 등록해 주세요.")
+                            st.warning(f"{pu['name']} 님의 신청이 반려되었습니다.")
+                            st.rerun()
+                    st.divider()
 
     st.markdown("---")
     if st.button("로그아웃"):
