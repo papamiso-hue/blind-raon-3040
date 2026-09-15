@@ -21,17 +21,53 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# 2. PWA 모바일 메타태그
-st.markdown("""
-<head>
-    <title>블라인드 라온</title>
-    <meta name="apple-mobile-web-app-title" content="블라인드 라온">
-    <meta name="application-name" content="블라인드 라온">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="mobile-web-app-capable" content="yes">
-    <link rel="apple-touch-icon" href="https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=192&auto=format&fit=crop">
-    <link rel="icon" type="image/png" href="https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=192&auto=format&fit=crop">
-</head>
+# 2. PWA 모바일 전용 앱 아이콘 & 브랜드명 주입 (홈화면 추가 완벽 지원)
+manifest_3040 = {
+    "name": "블라인드 라온",
+    "short_name": "블라인드라온",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#090D16",
+    "theme_color": "#172554",
+    "icons": [
+        {
+            "src": "https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=192&auto=format&fit=crop",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=512&auto=format&fit=crop",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ]
+}
+manifest_3040_json = json.dumps(manifest_3040)
+
+st.markdown(f"""
+    <head>
+        <title>블라인드 라온</title>
+        <meta name="apple-mobile-web-app-title" content="블라인드 라온">
+        <meta name="application-name" content="블라인드 라온">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="theme-color" content="#172554">
+        <link rel="apple-touch-icon" href="https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=192&auto=format&fit=crop">
+        <link rel="icon" type="image/png" href="https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=192&auto=format&fit=crop">
+    </head>
+    <script>
+        // 안드로이드 홈화면 추가용 Manifest 동적 주입
+        const manifestBlob = new Blob([`{manifest_3040_json}`], {{type: 'application/json'}});
+        const manifestURL = URL.createObjectURL(manifestBlob);
+        let manifestLink = document.querySelector("link[rel='manifest']");
+        if (!manifestLink) {{
+            manifestLink = document.createElement('link');
+            manifestLink.rel = 'manifest';
+            document.head.appendChild(manifestLink);
+        }}
+        manifestLink.href = manifestURL;
+        document.title = "블라인드 라온";
+    </script>
 """, unsafe_allow_html=True)
 
 # 3. 서비스 기본 상수 및 보안 Secrets 연동
