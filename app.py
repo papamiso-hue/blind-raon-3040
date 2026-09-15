@@ -426,8 +426,8 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-SUPABASE_URL = "https://xxiagepuzmukwcdnurhg.supabase.co"
-SUPABASE_KEY = "sb_publishable_CCbsSoMbvLYh1y4xJ2zYEA_XxisldNn"
+SUPABASE_URL = st.secrets["SUPABASE_URL"]
+SUPABASE_KEY = st.secrets["SUPABASE_KEY"]
 
 @st.cache_resource
 def get_supabase_client() -> Client:
