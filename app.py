@@ -21,7 +21,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# 2. PWA 모바일 웹앱 메타태그 주입
+# 2. PWA 모바일 메타태그
 st.markdown("""
 <head>
     <title>블라인드 라온</title>
@@ -40,6 +40,12 @@ BRAND_NAME_EN = "BLIND RAON 3040"
 SITE_URL = "https://blind-raon-3040-xtwjdberufkkgwje2abbzq.streamlit.app"
 OG_IMAGE_URL = "https://images.unsplash.com/photo-1507679799987-c73779587ccf?q=80&w=1200&auto=format&fit=crop"
 KAKAO_CHAT_URL = "https://open.kakao.com/o/sRas35Li"
+
+BANK_INFO = {
+    "bank": "카카오뱅크",
+    "account": "3333-01-2345678",
+    "holder": "라온(소셜클럽)"
+}
 
 ALIGO_API_KEY = st.secrets["ALIGO_API_KEY"]
 ALIGO_USER_ID = st.secrets["ALIGO_USER_ID"]
@@ -374,6 +380,27 @@ st.markdown("""
         font-style: italic;
     }
 
+    .shop-card {
+        background: #0F172A;
+        border: 1.5px solid rgba(96, 165, 250, 0.25);
+        border-radius: 16px;
+        padding: 18px 20px;
+        margin-bottom: 14px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .shop-card.featured {
+        border-color: #3B82F6;
+        background: linear-gradient(145deg, #1E293B 0%, #0F172A 100%);
+        box-shadow: 0 4px 20px rgba(59, 130, 246, 0.25);
+    }
+    .shop-title { font-size: 1.1rem; font-weight: 900; color: #FFFFFF; margin-bottom: 4px; }
+    .shop-desc { font-size: 0.82rem; color: #94A3B8; }
+    .shop-price { font-size: 1.3rem; font-weight: 900; color: #93C5FD; text-align: right; }
+    .shop-badge { display: inline-block; background: #2563EB; color: #FFFFFF; font-size: 0.68rem; font-weight: 800; padding: 2px 8px; border-radius: 4px; margin-bottom: 4px; }
+    .bank-box { background: rgba(30, 41, 59, 0.6); border: 1px dashed rgba(96, 165, 250, 0.4); border-radius: 14px; padding: 18px; text-align: center; margin: 16px 0; }
+
     div[data-baseweb="tab-list"] {
         background-color: rgba(15, 23, 42, 0.8) !important;
         padding: 5px;
@@ -473,7 +500,6 @@ DEFAULT_AVATARS = {
     "여": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=600&auto=format&fit=crop"
 }
 
-# 기본 세션 상태
 if "user_id" not in st.session_state:
     st.session_state.user_id = None
 if "user_info" not in st.session_state:
@@ -484,14 +510,11 @@ if "sms_verified_phone" not in st.session_state:
     st.session_state.sms_verified_phone = None
 if "sms_is_verified" not in st.session_state:
     st.session_state.sms_is_verified = False
-
-# SMS 연타 방지 변수
 if "sms_send_count" not in st.session_state:
     st.session_state.sms_send_count = 0
 if "sms_last_sent_at" not in st.session_state:
     st.session_state.sms_last_sent_at = None
 
-# 비밀번호 찾기 세션 상태
 if "reset_sms_code" not in st.session_state:
     st.session_state.reset_sms_code = None
 if "reset_verified_phone" not in st.session_state:
@@ -625,18 +648,17 @@ if not st.session_state.user_id:
             st.write("")
             btn_sms = st.button("인증번호 발송", key="btn_sms")
 
+        # ⚡ SMS 연타 방지 및 비용 보호 로직
         clean_jp = re.sub(r'[^0-9]', '', j_phone.strip())
-        
-        # 🛡️ SMS 연타 방지 및 쿨타임 로직 적용
         if btn_sms:
             now_ts = datetime.now().timestamp()
             if len(clean_jp) < 10:
                 st.error("올바른 휴대폰 번호를 입력해 주세요.")
             elif st.session_state.sms_send_count >= 3:
-                st.error("🚨 인증문자 발송 허용 횟수(최대 3회)를 초과했습니다. 잠시 후 다시 시도해 주세요.")
+                st.error("🚨 인증번호 발송 허용 횟수(3회)를 초과했습니다. 잠시 후 다시 시도해 주세요.")
             elif st.session_state.sms_last_sent_at and (now_ts - st.session_state.sms_last_sent_at < 60):
-                rem_sec = int(60 - (now_ts - st.session_state.sms_last_sent_at))
-                st.warning(f"⏳ 문자 재발송 쿨타임이 적용 중입니다. {rem_sec}초 후에 다시 시도해 주세요.")
+                remaining = int(60 - (now_ts - st.session_state.sms_last_sent_at))
+                st.warning(f"⏳ {remaining}초 후에 다시 요청할 수 있습니다. 문자가 도착할 때까지 기다려 주세요.")
             else:
                 dup = supabase.table("users").select("id").eq("phone", clean_jp).execute().data
                 if dup:
@@ -648,9 +670,8 @@ if not st.session_state.user_id:
                     st.session_state.sms_is_verified = False
                     st.session_state.sms_last_sent_at = now_ts
                     st.session_state.sms_send_count += 1
-                    
                     send_aligo_sms(clean_jp, code)
-                    st.success(f"문자로 발송된 6자리 인증번호를 입력해 주세요. (발송 {st.session_state.sms_send_count}/3회)")
+                    st.success(f"문자로 발송된 6자리 인증번호를 입력해 주세요. (발송 횟수: {st.session_state.sms_send_count}/3회)")
 
         if st.session_state.sms_auth_code:
             c_code, c_btn = st.columns([2.5, 1.2])
@@ -746,6 +767,7 @@ if not st.session_state.user_id:
                     }).execute().data[0]
 
                     uid = new_u["id"]
+                    # 1~5번 답변 신규 저장
                     supabase.table("user_answers").insert([
                         {"user_id": uid, "question_num": 1, "answer_value": a1},
                         {"user_id": uid, "question_num": 2, "answer_value": a2},
@@ -764,11 +786,12 @@ if not st.session_state.user_id:
 # --- 2. 메인 대시보드 화면 ---
 else:
     me = st.session_state.user_info
+    my_tickets = me.get('ticket_count', 0)
 
     st.markdown(f"""
         <div class="app-header">
             <div class="app-brand">💼 {BRAND_NAME_KR}</div>
-            <div style="font-size:0.8rem; font-weight:800; color:#38BDF8;">🎟️ 티켓 {me.get('ticket_count', 0)}장</div>
+            <div style="font-size:0.85rem; font-weight:800; color:#38BDF8;">🎟️ 보유 티켓 {my_tickets}장</div>
         </div>
     """, unsafe_allow_html=True)
 
@@ -785,11 +808,13 @@ else:
                 st.success(f"{clean_bp} 번호가 상호 차단되었습니다.")
                 st.rerun()
 
-    tabs_main = st.tabs(["✨ 추천 피드", "📬 신청 보관함", "👤 내 프로필"])
+    # 모순 3 해결: 3040 플랫폼에도 [티켓 충전] 탭 전면 배치
+    tabs_main = st.tabs(["✨ 추천 피드", "📬 신청 보관함", "💳 티켓 충전", "👤 내 프로필"])
 
     my_ans_data = supabase.table("user_answers").select("question_num, answer_value").eq("user_id", me["id"]).execute().data
     my_answers = {item["question_num"]: item["answer_value"] for item in my_ans_data}
 
+    # --- TAB 1: 추천 피드 ---
     with tabs_main[0]:
         target_gender = "여" if me["gender"] == "남" else "남"
         raw_candidates = supabase.table("users").select("*").eq("gender", target_gender).eq("is_suspended", False).execute().data
@@ -866,10 +891,12 @@ else:
                     st.success("🎉 매칭 성공! 보관함에서 선명한 원본 사진을 확인하세요.")
                 else:
                     if st.button("💌 대화 신청 (티켓 1장 차감)", key=f"feed_btn_{cand['id']}"):
-                        if me.get("ticket_count", 0) <= 0:
-                            st.error("티켓이 부족합니다. 관리자 또는 고객센터를 통해 충전해 주세요.")
+                        if my_tickets <= 0:
+                            st.error("🚨 보유 티켓이 부족합니다. 상단의 [💳 티켓 충전] 탭에서 충전 후 이용해 주세요.")
                         else:
-                            supabase.table("users").update({"ticket_count": me["ticket_count"] - 1}).eq("id", me["id"]).execute()
+                            supabase.table("users").update({"ticket_count": my_tickets - 1}).eq("id", me["id"]).execute()
+                            me["ticket_count"] = my_tickets - 1
+                            st.session_state.user_info = me
                             supabase.table("match_requests").insert({
                                 "sender_id": me["id"],
                                 "receiver_id": cand["id"],
@@ -879,11 +906,12 @@ else:
                             send_aligo_notice_sms(cand["phone"], f"{me['name'][0]}* 님으로부터 가치관 기반 대화 신청이 도착했습니다.")
                             st.rerun()
 
-                st.caption("ℹ️ 대화 신청 시 티켓 1장이 차감되며, 상대방이 72시간 내 응답하지 않거나 거절 시 티켓은 100% 자동 반환됩니다.")
+                st.caption("ℹ️ 대화 신청 시 티켓 1장이 사용되며, 상대방 거절/72시간 미응답 시 티켓은 자동 반환됩니다. (미사용 티켓 7일 이내 100% 환불)")
                 st.write("")
 
+    # --- TAB 2: 신청 보관함 (모순 1 해결: 72시간 자동 만료 & 거절 시 티켓 즉시 복구) ---
     with tabs_main[1]:
-        # ⏰ 72시간 무응답 자동 취소 및 티켓 100% 자동 복구 시스템
+        # 1) 72시간 무응답 대화 신청 자동 취소 및 티켓 반환 처리
         pending_sent = supabase.table("match_requests")\
             .select("*")\
             .eq("sender_id", me["id"])\
@@ -906,7 +934,7 @@ else:
             supabase.table("users").update({"ticket_count": new_ticket_val}).eq("id", me["id"]).execute()
             me["ticket_count"] = new_ticket_val
             st.session_state.user_info = me
-            st.info(f"💡 72시간 동안 상대방 응답이 없는 신청 {restored_count}건이 자동 취소되어 티켓 {restored_count}장이 정상 반환되었습니다.")
+            st.info(f"💡 72시간 동안 응답이 없는 신청 {restored_count}건이 자동 취소되어 티켓 {restored_count}장이 정상 반환되었습니다.")
 
         inbox_1, inbox_2 = st.tabs(["내가 보낸 신청", "나에게 온 신청"])
         
@@ -929,12 +957,12 @@ else:
                         """, unsafe_allow_html=True)
                         st.write(f"📞 안심 연락처: **{rcv['phone']}** | 💼 직장: **{rcv.get('job')}**")
                         st.markdown(f'<a href="tel:{rcv["phone"]}">📞 바로 전화 걸기</a>', unsafe_allow_html=True)
-                    elif req["status"] == "EXPIRED":
-                        st.write(f"• **{rcv['name'][0]}*님** 신청 기한만료(72시간 무응답) | 티켓 반환 완료 ✅")
                     elif req["status"] == "REJECTED":
-                        st.write(f"• **{rcv['name'][0]}*님** 신청 거절 | 티켓 반환 완료 ✅")
+                        st.write(f"• **{rcv['name'][0]}*님**이 신청을 정중히 사양하여 **티켓 1장이 즉시 반환**되었습니다.")
+                    elif req["status"] == "EXPIRED":
+                        st.write(f"• **{rcv['name'][0]}*님**의 72시간 미응답으로 자동 취소되어 **티켓 1장이 반환**되었습니다.")
                     else:
-                        st.write(f"• **{rcv['name'][0]}*님**에게 보낸 신청 | 상태: `대기중(72시간 초과 시 자동 반환)`")
+                        st.write(f"• **{rcv['name'][0]}*님**에게 보낸 신청 | 상태: `수락 대기중`")
 
         with inbox_2:
             rcv_list = supabase.table("match_requests").select("*").eq("receiver_id", me["id"]).execute().data
@@ -963,15 +991,88 @@ else:
                                 send_aligo_notice_sms(snd["phone"], f"{me['name'][0]}* 님이 대화를 수락했습니다. 프로필 블라인드가 해제되었습니다.")
                                 st.rerun()
                         with col_re:
+                            # ⚡ 거절 시 신청자 티켓 +1 즉시 자동 복구
                             if st.button("거절", key=f"re_{req['id']}"):
-                                # 거절 시 상대방 티켓 즉시 자동 복구
                                 supabase.table("match_requests").update({"status": "REJECTED"}).eq("id", req["id"]).execute()
-                                snd_curr = supabase.table("users").select("ticket_count").eq("id", snd["id"]).execute().data[0]
-                                supabase.table("users").update({"ticket_count": snd_curr.get("ticket_count", 0) + 1}).eq("id", snd["id"]).execute()
+                                
+                                # 신청자 티켓 복구
+                                cur_sender_ticket = snd.get("ticket_count", 0)
+                                supabase.table("users").update({"ticket_count": cur_sender_ticket + 1}).eq("id", snd["id"]).execute()
+                                send_aligo_notice_sms(snd["phone"], "보내신 대화 신청이 정중히 사양되었으며, 사용하신 티켓 1장이 정상 복구되었습니다.")
+                                st.success("거절 의사를 전달하였으며, 신청자에게 티켓이 안전하게 반환되었습니다.")
                                 st.rerun()
                     st.divider()
 
+    # --- TAB 3: 티켓 충전소 ---
     with tabs_main[2]:
+        st.markdown(f"""
+            <div style="text-align:center; padding: 10px 0 16px 0;">
+                <h3 style="color:#FFFFFF; margin-bottom:4px;">💼 3040 프라이빗 멤버십 충전</h3>
+                <div style="font-size:0.9rem; color:#94A3B8;">현재 회원님의 보유 티켓: <strong style="color:#38BDF8; font-size:1.05rem;">{my_tickets}장</strong></div>
+            </div>
+        """, unsafe_allow_html=True)
+
+        st.markdown("""
+            <div class="shop-card">
+                <div>
+                    <div class="shop-title">🎟️ 1회 대화 신청권</div>
+                    <div class="shop-desc">마음에 드는 이성 1명에게 신청</div>
+                </div>
+                <div class="shop-price">30,000원</div>
+            </div>
+            
+            <div class="shop-card featured">
+                <div>
+                    <span class="shop-badge">⭐ 가장 많은 선택</span>
+                    <div class="shop-title">🌟 3회 실속 패키지</div>
+                    <div class="shop-desc">3회 신청 (회당 약 26,000원 / 11% 할인)</div>
+                </div>
+                <div class="shop-price">80,000원</div>
+            </div>
+
+            <div class="shop-card">
+                <div>
+                    <span class="shop-badge" style="background:#1E3A8A;">💼 VIP 추천</span>
+                    <div class="shop-title">👑 5회 VIP 전담 패키지</div>
+                    <div class="shop-desc">5회 신청 + 프리미엄 매칭 매니저 서포트</div>
+                </div>
+                <div class="shop-price">130,000원</div>
+            </div>
+        """, unsafe_allow_html=True)
+
+        st.markdown(f"""
+            <div class="bank-box">
+                <div style="font-size:0.85rem; color:#E2E8F0; font-weight:700;">🏦 무통장 안심 입금 계좌</div>
+                <div style="font-size:1.15rem; font-weight:900; color:#38BDF8; margin:6px 0;">{BANK_INFO['bank']} {BANK_INFO['account']}</div>
+                <div style="font-size:0.82rem; color:#94A3B8;">예금주: {BANK_INFO['holder']} (입금자명: <strong>{me['name']}</strong>)</div>
+            </div>
+        """, unsafe_allow_html=True)
+
+        st.info("💡 입금 후 아래 **[카카오톡 1:1 입금 확인]** 버튼을 누르시고 성함을 남겨주시면, 담당 매니저가 즉시 확인 후 티켓을 충전해 드립니다.")
+        
+        st.markdown(f"""
+            <a href="{KAKAO_CHAT_URL}" target="_blank" style="text-decoration:none;">
+                <div style="background:#FEE500; color:#191919; text-align:center; padding:15px; border-radius:12px; font-weight:900; font-size:1.05rem; box-shadow:0 4px 14px rgba(254, 229, 0, 0.3); margin-bottom:18px;">
+                    💬 카카오톡 1:1 입금 확인 및 환불 문의
+                </div>
+            </a>
+        """, unsafe_allow_html=True)
+
+        with st.expander("⚖️ 전자상거래법에 따른 티켓 환불 및 안심 이용 규정 안내"):
+            st.markdown("""
+            **1. 미사용 티켓 100% 청약철회 (환불)**
+            * 구매 후 **7일 이내에 전혀 사용하지 않은 티켓**은 전자상거래법 제17조에 따라 별도의 수수료 없이 **결제 금액 전액(100%) 환불**됩니다.
+
+            **2. 사용한 티켓의 환불 제한**
+            * 상대방 프로필에 대화 신청을 전송하여 **이미 사용(차감)된 티켓은 디지털 용역 제공이 완료된 것으로 간주되어 환불이 불가**합니다.
+            * 패키지 상품 중 일부만 사용한 경우, 미사용 잔여 티켓은 전체 결제액에서 사용한 횟수만큼 단품 정가(회당 30,000원)를 차감한 후 잔여액을 반환합니다.
+
+            **3. 대화 신청 거절 및 72시간 미응답 시 티켓 보호**
+            * 신청을 받은 상대방이 정중히 '거절'하거나 72시간 이내 응답이 없을 경우, **차감된 티켓은 보유 수량으로 100% 자동 반환**됩니다.
+            """)
+
+    # --- TAB 4: 프로필 관리 (모순 2 & 모순 4 해결: 서류 컬럼 격리 및 75문항 중복 덮어쓰기 방지) ---
+    with tabs_main[3]:
         my_avatar = me.get("photo_url") or DEFAULT_AVATARS.get(me["gender"])
         st.markdown(f"""
             <div style="text-align:center; padding:10px 0 20px 0;">
@@ -992,6 +1093,7 @@ else:
         if intro_errs:
             st.caption(f"💡 권장 수정: {', '.join(intro_errs)}")
 
+        # ⚡ 모순 4 해결: job과 intro만 명시적 수정하여 서류 파기 상태 보존
         if st.button("프로필 정보 업데이트"):
             supabase.table("users").update({
                 "job": edit_job.strip(),
@@ -1017,6 +1119,7 @@ else:
             st.success("사진이 등록되었습니다. 매칭 전에는 블라인드 보호가 자동 적용됩니다.")
             st.rerun()
 
+        # ⚡ 모순 2 해결: 75문항 아코디언 저장 시 존재 여부 확인 후 업데이트/추가 분기
         st.markdown("---")
         st.markdown("#### 🎯 3040 심층 가치관 진단 (75문항)")
         st.caption("답변을 많이 채울수록 상대방과의 매칭 일치율 정확도가 비약적으로 향상됩니다.")
@@ -1057,9 +1160,10 @@ else:
                                 "question_num": q_num,
                                 "answer_value": ans_val
                             }).execute()
-                    st.success("✅ 해당 영역의 가치관 답변이 성공적으로 저장되었습니다!")
+                    st.success("✅ 해당 영역의 가치관 답변이 안전하게 저장되었습니다!")
                     st.rerun()
 
+    # 👑 [관리자 전용] 회원 서류 심사 및 승인 즉시 자동 영구 파기 센터
     if me.get("is_admin"):
         st.markdown("---")
         with st.expander("👑 [관리자 전용] 회원 서류 심사 및 즉시 파기 센터"):
