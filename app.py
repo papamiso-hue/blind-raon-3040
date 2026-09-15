@@ -960,10 +960,14 @@ else:
         for req in pending_sent:
             created_str = req.get("created_at")
             if created_str:
-                created_dt = datetime.fromisoformat(created_str.replace("Z", "+00:00"))
-                if now_dt - created_dt > timedelta(hours=72):
-                    supabase.table("match_requests").update({"status": "EXPIRED"}).eq("id", req["id"]).execute()
-                    restored_count += 1
+                try:
+                    clean_ts = created_str.split(".")[0].replace("Z", "")
+                    created_dt = datetime.fromisoformat(clean_ts).replace(tzinfo=timezone.utc)
+                    if now_dt - created_dt > timedelta(hours=72):
+                        supabase.table("match_requests").update({"status": "EXPIRED"}).eq("id", req["id"]).execute()
+                        restored_count += 1
+                except Exception:
+                    continue
 
         if restored_count > 0:
             new_ticket_val = me.get("ticket_count", 0) + restored_count
