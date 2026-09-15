@@ -473,6 +473,7 @@ DEFAULT_AVATARS = {
     "여": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=600&auto=format&fit=crop"
 }
 
+# 기본 세션 상태
 if "user_id" not in st.session_state:
     st.session_state.user_id = None
 if "user_info" not in st.session_state:
@@ -484,6 +485,13 @@ if "sms_verified_phone" not in st.session_state:
 if "sms_is_verified" not in st.session_state:
     st.session_state.sms_is_verified = False
 
+# SMS 연타 방지 변수
+if "sms_send_count" not in st.session_state:
+    st.session_state.sms_send_count = 0
+if "sms_last_sent_at" not in st.session_state:
+    st.session_state.sms_last_sent_at = None
+
+# 비밀번호 찾기 세션 상태
 if "reset_sms_code" not in st.session_state:
     st.session_state.reset_sms_code = None
 if "reset_verified_phone" not in st.session_state:
@@ -618,9 +626,17 @@ if not st.session_state.user_id:
             btn_sms = st.button("인증번호 발송", key="btn_sms")
 
         clean_jp = re.sub(r'[^0-9]', '', j_phone.strip())
+        
+        # 🛡️ SMS 연타 방지 및 쿨타임 로직 적용
         if btn_sms:
+            now_ts = datetime.now().timestamp()
             if len(clean_jp) < 10:
                 st.error("올바른 휴대폰 번호를 입력해 주세요.")
+            elif st.session_state.sms_send_count >= 3:
+                st.error("🚨 인증문자 발송 허용 횟수(최대 3회)를 초과했습니다. 잠시 후 다시 시도해 주세요.")
+            elif st.session_state.sms_last_sent_at and (now_ts - st.session_state.sms_last_sent_at < 60):
+                rem_sec = int(60 - (now_ts - st.session_state.sms_last_sent_at))
+                st.warning(f"⏳ 문자 재발송 쿨타임이 적용 중입니다. {rem_sec}초 후에 다시 시도해 주세요.")
             else:
                 dup = supabase.table("users").select("id").eq("phone", clean_jp).execute().data
                 if dup:
@@ -630,8 +646,11 @@ if not st.session_state.user_id:
                     st.session_state.sms_auth_code = code
                     st.session_state.sms_verified_phone = clean_jp
                     st.session_state.sms_is_verified = False
+                    st.session_state.sms_last_sent_at = now_ts
+                    st.session_state.sms_send_count += 1
+                    
                     send_aligo_sms(clean_jp, code)
-                    st.success("문자로 발송된 6자리 인증번호를 입력해 주세요.")
+                    st.success(f"문자로 발송된 6자리 인증번호를 입력해 주세요. (발송 {st.session_state.sms_send_count}/3회)")
 
         if st.session_state.sms_auth_code:
             c_code, c_btn = st.columns([2.5, 1.2])
@@ -697,7 +716,6 @@ if not st.session_state.user_id:
                 doc_ext = j_doc.name.split(".")[-1].lower()
                 doc_name = f"verify_{clean_jp}_{uuid.uuid4().hex[:6]}.{doc_ext}"
                 try:
-                    # Private 버킷에 안전 업로드
                     supabase.storage.from_("credit-docs").upload(
                         doc_name, 
                         j_doc.read(), 
@@ -713,7 +731,7 @@ if not st.session_state.user_id:
                         "age": int(j_age),
                         "region": j_region,
                         "credit_score": int(j_credit),
-                        "credit_doc_url": doc_name,  # 파일 식별자 저장
+                        "credit_doc_url": doc_name,
                         "credit_status": "PENDING",
                         "is_verified": False,
                         "ticket_count": 3,
@@ -849,7 +867,7 @@ else:
                 else:
                     if st.button("💌 대화 신청 (티켓 1장 차감)", key=f"feed_btn_{cand['id']}"):
                         if me.get("ticket_count", 0) <= 0:
-                            st.error("티켓이 부족합니다.")
+                            st.error("티켓이 부족합니다. 관리자 또는 고객센터를 통해 충전해 주세요.")
                         else:
                             supabase.table("users").update({"ticket_count": me["ticket_count"] - 1}).eq("id", me["id"]).execute()
                             supabase.table("match_requests").insert({
@@ -860,10 +878,36 @@ else:
                             }).execute()
                             send_aligo_notice_sms(cand["phone"], f"{me['name'][0]}* 님으로부터 가치관 기반 대화 신청이 도착했습니다.")
                             st.rerun()
-                st.caption("ℹ️ 대화 신청 시 티켓 1장이 사용되며, 상대방 거절/미응답 시 티켓은 자동 반환됩니다. (미사용 티켓은 7일 이내 100% 환불 가능)")           
+
+                st.caption("ℹ️ 대화 신청 시 티켓 1장이 차감되며, 상대방이 72시간 내 응답하지 않거나 거절 시 티켓은 100% 자동 반환됩니다.")
                 st.write("")
 
     with tabs_main[1]:
+        # ⏰ 72시간 무응답 자동 취소 및 티켓 100% 자동 복구 시스템
+        pending_sent = supabase.table("match_requests")\
+            .select("*")\
+            .eq("sender_id", me["id"])\
+            .eq("status", "PENDING")\
+            .execute().data
+            
+        now_dt = datetime.now(timezone.utc)
+        restored_count = 0
+        
+        for req in pending_sent:
+            created_str = req.get("created_at")
+            if created_str:
+                created_dt = datetime.fromisoformat(created_str.replace("Z", "+00:00"))
+                if now_dt - created_dt > timedelta(hours=72):
+                    supabase.table("match_requests").update({"status": "EXPIRED"}).eq("id", req["id"]).execute()
+                    restored_count += 1
+
+        if restored_count > 0:
+            new_ticket_val = me.get("ticket_count", 0) + restored_count
+            supabase.table("users").update({"ticket_count": new_ticket_val}).eq("id", me["id"]).execute()
+            me["ticket_count"] = new_ticket_val
+            st.session_state.user_info = me
+            st.info(f"💡 72시간 동안 상대방 응답이 없는 신청 {restored_count}건이 자동 취소되어 티켓 {restored_count}장이 정상 반환되었습니다.")
+
         inbox_1, inbox_2 = st.tabs(["내가 보낸 신청", "나에게 온 신청"])
         
         with inbox_1:
@@ -885,8 +929,12 @@ else:
                         """, unsafe_allow_html=True)
                         st.write(f"📞 안심 연락처: **{rcv['phone']}** | 💼 직장: **{rcv.get('job')}**")
                         st.markdown(f'<a href="tel:{rcv["phone"]}">📞 바로 전화 걸기</a>', unsafe_allow_html=True)
+                    elif req["status"] == "EXPIRED":
+                        st.write(f"• **{rcv['name'][0]}*님** 신청 기한만료(72시간 무응답) | 티켓 반환 완료 ✅")
+                    elif req["status"] == "REJECTED":
+                        st.write(f"• **{rcv['name'][0]}*님** 신청 거절 | 티켓 반환 완료 ✅")
                     else:
-                        st.write(f"• **{rcv['name'][0]}*님**에게 보낸 신청 | 상태: `{req['status']}`")
+                        st.write(f"• **{rcv['name'][0]}*님**에게 보낸 신청 | 상태: `대기중(72시간 초과 시 자동 반환)`")
 
         with inbox_2:
             rcv_list = supabase.table("match_requests").select("*").eq("receiver_id", me["id"]).execute().data
@@ -916,7 +964,10 @@ else:
                                 st.rerun()
                         with col_re:
                             if st.button("거절", key=f"re_{req['id']}"):
+                                # 거절 시 상대방 티켓 즉시 자동 복구
                                 supabase.table("match_requests").update({"status": "REJECTED"}).eq("id", req["id"]).execute()
+                                snd_curr = supabase.table("users").select("ticket_count").eq("id", snd["id"]).execute().data[0]
+                                supabase.table("users").update({"ticket_count": snd_curr.get("ticket_count", 0) + 1}).eq("id", snd["id"]).execute()
                                 st.rerun()
                     st.divider()
 
@@ -1009,7 +1060,6 @@ else:
                     st.success("✅ 해당 영역의 가치관 답변이 성공적으로 저장되었습니다!")
                     st.rerun()
 
-    # 👑 [관리자 전용] 신원 서류 심사 및 승인 즉시 자동 파기 센터
     if me.get("is_admin"):
         st.markdown("---")
         with st.expander("👑 [관리자 전용] 회원 서류 심사 및 즉시 파기 센터"):
@@ -1025,7 +1075,6 @@ else:
                     doc_path = pu.get("credit_doc_url", "")
                     if doc_path and not doc_path.startswith("["):
                         try:
-                            # Private 버킷 임시 서명 URL 생성 (60초 유효)
                             raw_path = doc_path.split("/")[-1]
                             signed = supabase.storage.from_("credit-docs").create_signed_url(raw_path, 60)
                             s_url = signed.get("signedURL") or signed.get("signedUrl")
@@ -1037,14 +1086,12 @@ else:
                     col_ap, col_rj = st.columns(2)
                     with col_ap:
                         if st.button(f"✅ 승인 및 서류 영구 파기", key=f"btn_ap_{pu['id']}"):
-                            # 1. 스토리지 파일 완전 영구 삭제
                             raw_fname = doc_path.split("/")[-1]
                             try:
                                 supabase.storage.from_("credit-docs").remove([raw_fname])
                             except Exception:
                                 pass
                             
-                            # 2. DB 상태 승인 전환 및 URL 영구 소거
                             supabase.table("users").update({
                                 "is_verified": True,
                                 "credit_status": "VERIFIED",
