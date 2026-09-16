@@ -1067,7 +1067,7 @@ else:
                                 st.rerun()
                     st.divider()
 
-    # --- TAB 3: 티켓 충전소 ---
+# --- TAB 3: 티켓 충전소 ---
     with tabs_main[2]:
         st.markdown(f"""
             <div style="text-align:center; padding: 10px 0 16px 0;">
@@ -1076,6 +1076,7 @@ else:
             </div>
         """, unsafe_allow_html=True)
 
+        # 1회권
         st.markdown("""
             <div class="shop-card">
                 <div>
@@ -1084,7 +1085,14 @@ else:
                 </div>
                 <div class="shop-price">30,000원</div>
             </div>
-            
+        """, unsafe_allow_html=True)
+        if st.button("🎟️ 1회권 구매 신청 (30,000원)", key="buy_ticket_1"):
+            st.session_state.selected_package = "1회 대화 신청권 (30,000원)"
+
+        st.write("")
+
+        # 3회 패키지
+        st.markdown("""
             <div class="shop-card featured">
                 <div>
                     <span class="shop-badge">⭐ 가장 많은 선택</span>
@@ -1093,7 +1101,14 @@ else:
                 </div>
                 <div class="shop-price">80,000원</div>
             </div>
+        """, unsafe_allow_html=True)
+        if st.button("🌟 3회 실속 패키지 구매 신청 (80,000원)", key="buy_ticket_3"):
+            st.session_state.selected_package = "3회 실속 패키지 (80,000원)"
 
+        st.write("")
+
+        # 5회 패키지
+        st.markdown("""
             <div class="shop-card">
                 <div>
                     <span class="shop-badge" style="background:#1E40AF;">👑 VIP 추천</span>
@@ -1103,6 +1118,13 @@ else:
                 <div class="shop-price">130,000원</div>
             </div>
         """, unsafe_allow_html=True)
+        if st.button("👑 5회 VIP 패키지 구매 신청 (130,000원)", key="buy_ticket_5"):
+            st.session_state.selected_package = "5회 VIP 전담 패키지 (130,000원)"
+
+        # 사용자가 상품을 선택했을 때 나타나는 안내 박스
+        if st.session_state.get("selected_package"):
+            pkg = st.session_state.selected_package
+            st.info(f"선택하신 상품: **{pkg}**\n\n아래 전용 계좌로 입금 후 [카카오톡 입금 확인] 버튼을 눌러주시면 즉시 충전됩니다.")
 
         st.markdown(f"""
             <div class="bank-box">
@@ -1112,12 +1134,10 @@ else:
             </div>
         """, unsafe_allow_html=True)
 
-        st.info("💡 입금 후 아래 **[카카오톡 1:1 입금 확인]** 버튼을 누르시고 성함을 남겨주시면, 담당 매니저가 즉시 확인 후 티켓을 충전해 드립니다.")
-        
         st.markdown(f"""
             <a href="{KAKAO_CHAT_URL}" target="_blank" style="text-decoration:none;">
                 <div style="background:#FEE500; color:#191919; text-align:center; padding:15px; border-radius:12px; font-weight:900; font-size:1.05rem; box-shadow:0 4px 14px rgba(254, 229, 0, 0.3); margin-bottom:18px;">
-                    💬 카카오톡 1:1 입금 확인 및 환불 문의
+                    💬 카카오톡 1:1 입금 확인 및 빠른 충전 요청
                 </div>
             </a>
         """, unsafe_allow_html=True)
