@@ -466,11 +466,13 @@ def send_aligo_sms(receiver_phone, auth_code):
             "testmode_yn": "N"
         }
         res = requests.post(url, data=payload, timeout=6)
-        if res.status_code == 200 and res.json().get("result_code") == "1":
+        r_json = res.json()
+        if res.status_code == 200 and str(r_json.get("result_code")) == "1":
             return True, "인증번호가 발송되었습니다."
-        return False, "인증문자 발송 실패"
+        else:
+            return False, f"알리고 응답 에러: {r_json.get('message', r_json)}"
     except Exception as e:
-        return False, f"SMS 오류: {e}"
+        return False, f"SMS 통신 오류: {e}"
 
 def send_aligo_notice_sms(receiver_phone, text_message):
     try:
@@ -692,11 +694,6 @@ if not st.session_state.user_id:
             now_ts = datetime.now().timestamp()
             if len(clean_jp) < 10:
                 st.error("올바른 휴대폰 번호를 입력해 주세요.")
-            elif st.session_state.sms_send_count_3040 >= 3:
-                st.error("🚨 인증번호 발송 허용 횟수(3회)를 초과했습니다. 잠시 후 다시 시도해 주세요.")
-            elif st.session_state.sms_last_sent_at_3040 and (now_ts - st.session_state.sms_last_sent_at_3040 < 60):
-                remaining = int(60 - (now_ts - st.session_state.sms_last_sent_at_3040))
-                st.warning(f"⏳ {remaining}초 후에 다시 요청할 수 있습니다. 문자가 도착할 때까지 기다려 주세요.")
             else:
                 dup = supabase.table("users").select("id").eq("phone", clean_jp).execute().data
                 if dup:
@@ -706,10 +703,12 @@ if not st.session_state.user_id:
                     st.session_state.sms_auth_code = code
                     st.session_state.sms_verified_phone = clean_jp
                     st.session_state.sms_is_verified = False
-                    st.session_state.sms_last_sent_at_3040 = now_ts
-                    st.session_state.sms_send_count_3040 += 1
-                    send_aligo_sms(clean_jp, code)
-                    st.success(f"문자로 발송된 6자리 인증번호를 입력해 주세요. (발송 횟수: {st.session_state.sms_send_count_3040}/3회)")
+                    
+                    ok, msg = send_aligo_sms(clean_jp, code)
+                    if ok:
+                        st.success("문자로 발송된 6자리 인증번호를 입력해 주세요.")
+                    else:
+                        st.error(f"🚨 {msg}")
 
         if st.session_state.sms_auth_code:
             c_code, c_btn = st.columns([2.5, 1.2])
