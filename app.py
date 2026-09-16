@@ -22,22 +22,22 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# 2. PWA 모바일 전용 앱 아이콘 & 브랜드명 주입 (홈화면 추가 완벽 지원)
+# 2. PWA 모바일 전용 앱 아이콘 & 브랜드명 주입
 manifest_3040 = {
     "name": "블라인드 라온",
     "short_name": "블라인드라온",
     "start_url": "/",
     "display": "standalone",
-    "background_color": "#090D16",
-    "theme_color": "#172554",
+    "background_color": "#0A0A0C",
+    "theme_color": "#1F190B",
     "icons": [
         {
-            "src": "https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=192&auto=format&fit=crop",
+            "src": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=192&auto=format&fit=crop",
             "sizes": "192x192",
             "type": "image/png"
         },
         {
-            "src": "https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=512&auto=format&fit=crop",
+            "src": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=512&auto=format&fit=crop",
             "sizes": "512x512",
             "type": "image/png"
         }
@@ -52,9 +52,9 @@ st.markdown(f"""
         <meta name="application-name" content="블라인드 라온">
         <meta name="apple-mobile-web-app-capable" content="yes">
         <meta name="mobile-web-app-capable" content="yes">
-        <meta name="theme-color" content="#172554">
-        <link rel="apple-touch-icon" href="https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=192&auto=format&fit=crop">
-        <link rel="icon" type="image/png" href="https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=192&auto=format&fit=crop">
+        <meta name="theme-color" content="#1F190B">
+        <link rel="apple-touch-icon" href="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=192&auto=format&fit=crop">
+        <link rel="icon" type="image/png" href="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=192&auto=format&fit=crop">
     </head>
     <script>
         const manifestBlob = new Blob([`{manifest_3040_json}`], {{type: 'application/json'}});
@@ -74,14 +74,8 @@ st.markdown(f"""
 BRAND_NAME_KR = "블라인드 라온"
 BRAND_NAME_EN = "BLIND RAON 3040"
 SITE_URL = "https://blind-raon-3040-xtwjdberufkkgwje2abbzq.streamlit.app"
-OG_IMAGE_URL = "https://images.unsplash.com/photo-1507679799987-c73779587ccf?q=80&w=1200&auto=format&fit=crop"
+OG_IMAGE_URL = "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=1200&auto=format&fit=crop"
 KAKAO_CHAT_URL = "https://open.kakao.com/o/sRas35Li"
-
-BANK_INFO = {
-    "bank": "카카오뱅크",
-    "account": "3333-01-2345678",
-    "holder": "라온(소셜클럽)"
-}
 
 ALIGO_API_KEY = st.secrets["ALIGO_API_KEY"]
 ALIGO_USER_ID = st.secrets["ALIGO_USER_ID"]
@@ -94,6 +88,12 @@ def hash_password(pwd: str) -> str:
     if not pwd:
         return ""
     return hashlib.sha256(pwd.strip().encode("utf-8")).hexdigest()
+
+BANK_INFO = {
+    "bank": "카카오뱅크",
+    "account": "3333-01-2345678",
+    "holder": "라온(소셜클럽)"
+}
 
 PLATFORM_TYPO_RULES = {
     r"안녕하새요": "안녕하세요",
@@ -138,86 +138,27 @@ KOREA_REGIONS = {
     "세종특별자치시": ["세종시 전역"]
 }
 
-QUESTIONS_75 = {
-    1: {"category": "결혼관 및 가족 계획", "text": "1. 구체적인 결혼 희망 시점?", "options": ["1년 이내 빠른 결혼 희망", "1~2년 정도 진중한 연애 후 결정", "2~3년 이상 충분히 겪어본 후 결정", "혼인신고에 얽매이지 않는 진지한 연인 관계"]},
-    2: {"category": "결혼관 및 가족 계획", "text": "2. 자녀 출산 계획?", "options": ["필수 (최소 1~2명 이상 희망)", "상호 합의에 따라 유연하게 결정", "딩크(DINK: 자녀 없이 둘만의 삶) 확고", "상대방의 뜻에 전적으로 맞춤"]},
-    3: {"category": "결혼관 및 가족 계획", "text": "3. 자녀 양육의 주체?", "options": ["부부 공동 육아 (육아휴직 필수 활용)", "부모님이나 베이비시터 적극 도움 활용", "한쪽이 전업으로 집중 케어", "상호 커리어 상황에 따라 유연 대처"]},
-    4: {"category": "결혼관 및 가족 계획", "text": "4. 양가 부모님과의 교류 빈도?", "options": ["월 1~2회 이상 정기적 식사 및 교류", "명절 및 생신 등 특별한 기념일 중심", "분기별 1회 정도의 편안한 거리감 유지", "각자 본인 부모님은 각자 챙기는 독립형"]},
-    5: {"category": "결혼관 및 가족 계획", "text": "5. 명절(설/추석) 방문 문화?", "options": ["양가 당일 공평하게 순차 방문", "양가 한 번씩 번갈아 가며 방문", "명절 당일 가벼운 인사 후 부부만의 여행/휴식", "각자 본가 방문 후 집에서 조우"]},
-    6: {"category": "결혼관 및 가족 계획", "text": "6. 부모님 부양 및 노후 지원?", "options": ["부모님 노후는 자녀가 일정 부분 책임 분담", "경제적 지원(용돈) 위주로 분담", "부모님 자산 내 자립 원칙, 간섭 최소화", "건강 악화 등 위급 상황 시에만 지원"]},
-    7: {"category": "결혼관 및 가족 계획", "text": "7. 스몰 웨딩 vs 전통 예식?", "options": ["호텔/컨벤션 격식 있는 정통 예식", "보증인원 100명 안팎의 스몰/하우스 웨딩", "직계 가족만 모시는 식사 형태의 간소화", "예식 생략(혼인신고 및 여행으로 대체)"]},
-    8: {"category": "결혼관 및 가족 계획", "text": "8. 혼수 및 예물·예단에 대한 생각?", "options": ["전통적 격식과 예의를 갖춘 예단/예물", "반지 등 필수 상징물만 간소하게 진행", "예단/예물 전면 생략, 신혼집에 올인", "상호 부모님 의견에 전적으로 맞춤"]},
-    9: {"category": "결혼관 및 가족 계획", "text": "9. 시댁/처가와의 단톡방 개설?", "options": ["가족 전체 단톡방 적극 찬성 및 소통", "공지용 단톡방 개설은 무방", "단톡방 개설 부담, 배우자를 통한 소통 선호", "절대 사양 (사생활 보호 필수)"]},
-    10: {"category": "결혼관 및 가족 계획", "text": "10. 주거지 선택 시 양가 거리?", "options": ["부모님 근처(도보/차량 10분) 거주 선호", "양가 중간 지점 거주", "직장 출퇴근 편리성이 최우선 (거리 무관)", "간섭 방지를 위해 양가와 먼 곳 선호"]},
-    11: {"category": "결혼관 및 가족 계획", "text": "11. 자녀의 사교육에 대한 가치관?", "options": ["조기 교육 및 학군지 진입 필수", "아이가 원하는 분야 중심 맞춤 교육", "공교육과 체험·인성 위주 교육", "사교육 최소화, 자율성 존중"]},
-    12: {"category": "결혼관 및 가족 계획", "text": "12. 부모님과의 동거 가능 여부?", "options": ["상황에 따라 동거 가능", "한 건물(위아래층)이나 인근 거주는 가능", "절대 동거 불가 (완전 독립 원칙)", "상대방 부모님 케어가 절실할 때만 한시적 허용"]},
-    13: {"category": "결혼관 및 가족 계획", "text": "13. 자녀 출산 후 본인의 성씨 승계?", "options": ["부계 성씨 원칙 준수", "상호 협의하여 부모 성씨 선택 가능", "깊게 생각해보지 않음 (일반적 관례 수용)", "어머니 성씨 승계도 열려 있음"]},
-    14: {"category": "결혼관 및 가족 계획", "text": "14. 집안 대소사(제사 등) 참석?", "options": ["모든 제사 및 집안 행사 성실 참석", "주요 제사 1~2개만 간소화하여 참석", "제사 문화 폐지 또는 가족 모임으로 대체 희망", "종교적 이유 등으로 제사 미참석"]},
-    15: {"category": "결혼관 및 가족 계획", "text": "15. 결혼 전 파혼/이혼에 대한 가치관?", "options": ["어떠한 갈등도 끝까지 대화로 극복해야 함", "가치관 훼손이나 외도/폭력 시 즉시 결별/이혼", "신뢰 상실 시 미련 없이 정리", "자녀가 있다면 자녀 독립까지 유지 노력"]},
-
-    16: {"category": "경제관 및 자산 관리", "text": "16. 신혼집 마련 자금 분담 비율?", "options": ["남녀 5:5 완전 공평 분담", "각자 보유 자산 비례 분담", "경제적 여유가 더 있는 쪽이 주도적 분담", "전통적 관례(주택 남성 / 혼수 여성) 선호"]},
-    17: {"category": "경제관 및 자산 관리", "text": "17. 결혼 후 부부 자산 관리 방식?", "options": ["급여 통장 전액 합산 + 용돈제 운용", "공동 생활비 통장 각출 + 잉여 자산 각자 관리", "한 사람이 전담 관리 (금융 감각 있는 사람)", "완벽한 각자 관리 (생활비만 항목별 자동이체)"]},
-    18: {"category": "경제관 및 자산 관리", "text": "18. 결혼 전 자산 및 부채 공개 시점?", "options": ["교제 초반 진지한 대화 시 전면 공개", "결혼 승낙 및 구체적 준비 시작 시 공개", "신혼집 계약 직전 필수 자금만 공개", "굳이 상세 내역까지 100% 깔 필요는 없음"]},
-    19: {"category": "경제관 및 자산 관리", "text": "19. 주식 / 코인 등 고위험 투자?", "options": ["절대 반대 (원금 손실 공포형)", "총자산의 10~20% 이내 소액 운용 찬성", "본인 용돈/여유 자금 범위 내 자율 투자 인정", "고수익 적극 지향 (적극적 레버리지 찬성)"]},
-    20: {"category": "경제관 및 자산 관리", "text": "20. 주택 매수를 위한 대출 허용 범위?", "options": ["대출 최소화 (원리금 상환액이 월 소득 20% 이내)", "감당 가능한 수준 (월 소득 30~40% 상환)", "상급지 갈아타기라면 소득 50% 수준까지 감수", "무리한 매수 반대, 전월세 거주 선호"]},
-    21: {"category": "경제관 및 자산 관리", "text": "21. 본인 순수 개인 용돈 규모 (월 기준)?", "options": ["30만 원 미만 (극단적 절약)", "30만 ~ 50만 원 수준", "50만 ~ 100만 원 수준", "100만 원 이상 (자율적 사회생활 보장)"]},
-    22: {"category": "경제관 및 자산 관리", "text": "22. 양가 부모님 정기 용돈 및 명절 비용?", "options": ["매월 정기 용돈 필수 (양가 동일 금액)", "생신/명절/어버이날에만 목돈 지급", "상호 부모님 경제력에 따라 차등 지급", "정기 지원 지양 (선물 및 식사 대접 위주)"]},
-    23: {"category": "경제관 및 자산 관리", "text": "23. 명품, 고가 소비 성향?", "options": ["실용성 위주 (가성비 철저 추구)", "1년에 1~2번 나를 위한 특별 보상형 소비", "취향과 품위를 위한 가치 소비 적극 인정", "타인 시선 의식한 사치성 소비 절대 지양"]},
-    24: {"category": "경제관 및 자산 관리", "text": "24. 배우자 몰래 형성하는 비상금?", "options": ["절대 불가 (모든 자산 투명 공개 원칙)", "비상시를 위한 소액(수백만 원) 정도는 묵인", "각자 프라이버시 영역이므로 얼마든지 인정", "서로 묻지 않는 것이 미덕"]},
-    25: {"category": "경제관 및 자산 관리", "text": "25. 가족/친인척 대상 금전 대여?", "options": ["어떠한 경우에도 절대 불가", "100만~200만 원 선에서 안 받을 생각으로 지급", "배우자 사전 동의 하에 제한적 대여 가능", "직계 가족이라면 능력껏 도와야 함"]},
-    26: {"category": "경제관 및 자산 관리", "text": "26. 배달 음식 및 외식 소비 빈도?", "options": ["주 1회 이하 (집밥/밀키트 중심 절약)", "주 2~3회 적절한 외식과 배달", "주 4회 이상 (시간 절약과 미식 중심)", "평일 집밥, 주말은 전면 외식"]},
-    27: {"category": "경제관 및 자산 관리", "text": "27. 은퇴 및 노후 준비 우선순위?", "options": ["국민연금 + 퇴직연금 + 개인연금 3층 보장", "수익형 부동산(월세 흐름) 세팅", "미국 배당주/지수 ETF 장기 적립", "자녀 교육과 현재 삶이 우선, 노후는 추후 고민"]},
-    28: {"category": "경제관 및 자산 관리", "text": "28. 가계부 작성 및 지출 결산?", "options": ["매월 정기적으로 부부 가계부 결산 필수", "큰 지출(50만 원 이상)만 상호 공유", "카드 명세서 각자 확인하는 수준", "가계부 작성 불필요 (각자 한도 내 관리)"]},
-    29: {"category": "경제관 및 자산 관리", "text": "29. 배우자의 기존 학자금/마통 대출?", "options": ["결혼 전 본인이 전액 청산 후 입주 원칙", "결혼 후 공동 자금으로 최우선 상환", "대출자 본인 용돈/수입으로 개별 상환", "저금리라면 굳이 조기 상환하지 않고 운용"]},
-    30: {"category": "경제관 및 자산 관리", "text": "30. 복권, 사행성 오락에 대한 생각?", "options": ["1천 원짜리 로또도 낭비 (일절 반대)", "매주 5천 원~1만 원 소소한 로또는 취미 인정", "여행지 카지노나 레저성 게임은 인정", "어떠한 도박성 행위도 절대 용납 불가"]},
-
-    31: {"category": "직업관 및 커리어·가사", "text": "31. 맞벌이 지속 여부?", "options": ["평생 맞벌이 필수 (소득 극대화)", "출산·육아 시기에만 한시적 외벌이 허용", "한 사람 소득이 충분하다면 외벌이 선호", "언제든 원할 때 퇴사/휴직 지지"]},
-    32: {"category": "직업관 및 커리어·가사", "text": "32. 가사 노동(청소·빨래·요리) 분담 원칙?", "options": ["요일/구역별 5:5 철저 분담", "잘하는 분야 전담 (요리는 남편, 청소는 아내 등)", "소득/퇴근 시간에 비례하여 유연 분담", "가전제품 및 가사도우미 적극 활용"]},
-    33: {"category": "직업관 및 커리어·가사", "text": "33. 식사 준비 및 요리 성향?", "options": ["건강을 위해 매일 직접 요리하는 밥상 선호", "밀키트, 반찬가게 적극 활용", "주말 위주 요리, 평일은 간단 해결", "요리에 스트레스받지 않고 배달/간편식 선호"]},
-    34: {"category": "직업관 및 커리어·가사", "text": "34. 잦은 야근 및 주말 출근에 대한 이해도?", "options": ["일과 커리어 성장을 위해 얼마든지 지지", "사전 공유만 된다면 이해 가능", "워라밸 필수 (가족과의 시간이 부족하면 반대)", "직장 이동 권유"]},
-    35: {"category": "직업관 및 커리어·가사", "text": "35. 배우자의 이직, 진학, 유학 희망?", "options": ["커리어 점프라면 전폭적 재정/심리 지원", "경제적 공백이 크지 않은 선에서만 찬성", "현실적 가계 유지가 우선이므로 신중 반대", "결혼 후에는 무리한 도전 지양 희망"]},
-    36: {"category": "직업관 및 커리어·가사", "text": "36. 배우자의 개인 사업 / 창업 희망 시?", "options": ["확실한 계획과 종잣돈 범위 내 전폭 지지", "가족 자산 담보 대출이 없다면 인정", "안정적 직장 유지가 우선이므로 결사반대", "동업 형태로 함께 참여할 의사 있음"]},
-    37: {"category": "직업관 및 커리어·가사", "text": "37. 직장 회식 및 술자리 빈도?", "options": ["월 1~2회 필수 회식만 참석 희망", "업무상 네트워킹이라면 주 1~2회도 이해", "2차, 3차 이어지는 늦은 귀가는 절대 반대", "자율에 맡기되 귀가 시간 사전 공유 필수"]},
-    38: {"category": "직업관 및 커리어·가사", "text": "38. 지방 발령 또는 해외 파견 시?", "options": ["부부 동반 이주 필수 (절대 떨어져 살 수 없음)", "단기(1~2년)라면 주말 부부 가능", "아이 교육이나 커리어가 우선인 쪽 거주지 유지", "원거리 근무 조건 자체를 거절하길 바람"]},
-    39: {"category": "직업관 및 커리어·가사", "text": "39. 집안 청결도 및 정리정돈 기준?", "options": ["매일 먼지 없이 칼각 정리정돈 유지", "주말에 한 번 몰아서 대청소", "눈에 거슬리는 사람 먼저 치우기", "어질러져 있어도 크게 스트레스받지 않음"]},
-    40: {"category": "직업관 및 커리어·가사", "text": "40. 재택근무 시 배우자 배려?", "options": ["업무 시간엔 완벽한 직장 모드로 터치 금지", "집안일과 업무 유연 병행 기대", "집 안 독립된 서재/오피스 공간 필수", "카페나 공유오피스 출근 선호"]},
-    41: {"category": "직업관 및 커리어·가사", "text": "41. 정년퇴직 후 인생 설계?", "options": ["은퇴 후에도 소소한 일/봉사 지속 희망", "귀농·귀촌 또는 전원생활", "해외 한 달 살기 등 완전한 휴식과 여가", "도심에 머물며 문화생활 향유"]},
-    42: {"category": "직업관 및 커리어·가사", "text": "42. 직장 동료(이성 포함)와의 친목?", "options": ["공적인 업무 소통 외 사적 연락 자제", "팀 단위 친목 모임은 자연스럽게 인정", "1:1 점심/커피는 업무 연장이면 가능", "퇴근 후 사적 만남은 절대 불가"]},
-    43: {"category": "직업관 및 커리어·가사", "text": "43. 3대 가전(식세기, 로봇청소기, 건조기)?", "options": ["3대 이모님 필수 구비 (시간 절약 최우선)", "필요성 검토 후 선별적 구매", "손으로 직접 하는 것이 더 깨끗하고 경제적", "최신 AI 가전으로 전면 스마트홈 구축"]},
-    44: {"category": "직업관 및 커리어·가사", "text": "44. 가사 분담 불이행 시 해결책?", "options": ["벌금제 도입 또는 패널티 부여", "즉시 가사도우미 유료 고용", "조용히 내가 먼저 하고 나중에 차분히 대화", "감정 싸움으로 번지기 전에 규칙 재조정"]},
-    45: {"category": "직업관 및 커리어·가사", "text": "45. 경력 단절에 대한 생각?", "options": ["어떠한 경우에도 경력 단절 절대 반대", "육아기 2~3년 정도의 경력 단절은 감수", "재취업 준비가 되어 있다면 단절 무방", "전업주부로서의 삶도 훌륭한 커리어로 인정"]},
-
-    46: {"category": "일상·생활 습관 및 취미", "text": "46. 흡연(연초/전자담배)에 대한 기준?", "options": ["절대 비흡연자 필수 (과거 흡연도 싫음)", "전자담배까지는 양해 가능", "실외 흡연 및 냄새 관리 철저하면 무관", "본인도 흡연자이므로 상관없음"]},
-    47: {"category": "일상·생활 습관 및 취미", "text": "47. 음주 빈도 및 주류 취향?", "options": ["일절 안 마심 (술자리 기피)", "주 1~2회 가볍게 반주나 와인/맥주 한 캔", "주 3~4회 애주가 스타일", "취할 때까지 마시는 폭음 문화 절대 반대"]},
-    48: {"category": "일상·생활 습관 및 취미", "text": "48. 주말 여가 활용 패턴?", "options": ["무조건 집에서 쉬는 집돌이/집순이", "캠핑, 등산, 골프, 드라이브 등 야외 아웃도어", "맛집, 카페, 전시회 등 핫플레이스 탐방", "자기계발(운동, 독서, 스터디) 중심"]},
-    49: {"category": "일상·생활 습관 및 취미", "text": "49. 반려동물(개/고양이) 양육?", "options": ["가족과 같으므로 이미 키우고 있거나 키울 예정", "털 날림, 냄새 등으로 실내 양육 절대 반대", "상대방이 원하면 키울 의향 있음", "아이 낳기 전까지만 한시적 양육"]},
-    50: {"category": "일상·생활 습관 및 취미", "text": "50. 종교 활동 및 신앙심?", "options": ["동일 종교 필수 + 주말 예배/미사 필수", "무교 선호 (종교 활동 강요 절대 사양)", "종교는 자유이나 집안 행사/자녀 강요 금지", "종교 무관 (상대방 신앙 존중)"]},
-    51: {"category": "일상·생활 습관 및 취미", "text": "51. 수면 패턴 및 기상 시간?", "options": ["밤 11시 취침 - 아침 6시 기상 (아침형)", "새벽 1~2시 취침 - 아침 8~9시 기상 (저녁형)", "주말엔 무조건 늦잠과 낮잠 필수", "불규칙한 편이나 상대방에게 맞출 수 있음"]},
-    52: {"category": "일상·생활 습관 및 취미", "text": "52. 잠자리 습관 (코골이, 뒤척임 등)?", "options": ["소음에 민감하여 각방 또는 트윈베드 선호", "암막 커튼, 보조기구 적극 활용", "껴안고 자야 하며 분리 수면 절대 반대", "크게 예민하지 않아 무던하게 잠"]},
-    53: {"category": "일상·생활 습관 및 취미", "text": "53. 여행 스타일?", "options": ["분 단위 계획표 세우는 파워 J 스타일", "발길 닿는 대로 움직이는 즉흥 힐링(P 스타일)", "호캉스, 리조트 등 휴양 위주", "관광지 전부 돌아보는 액티비티 중심"]},
-    54: {"category": "일상·생활 습관 및 취미", "text": "54. 식습관 및 음식 취향?", "options": ["한식 파 (국, 찌개, 밥 필수)", "양식, 육류, 미식 다이닝 선호", "비건, 채식 또는 건강 다이어트 식단", "가리는 것 없이 아무거나 잘 먹음"]},
-    55: {"category": "일상·생활 습관 및 취미", "text": "55. 집안 실내 온도 조절?", "options": ["여름엔 24도 이하 풀가동 (더위 못 참음)", "에어컨 바람 싫어함 (27도 이상 또는 선풍기)", "겨울철 따뜻한 온돌 난방 필수 (추위 못 참음)", "관리비 절약을 위해 적정 실내온도 엄격 준수"]},
-    56: {"category": "일상·생활 습관 및 취미", "text": "56. TV 및 스마트폰 사용 습관?", "options": ["집에 오면 TV나 유튜브 항상 틀어놓음", "미디어 단식 (책 읽거나 대화 중심)", "식사 중 스마트폰 사용 절대 금지", "각자 자유롭게 침대에서 스마트폰 하는 시간 존중"]},
-    57: {"category": "일상·생활 습관 및 취미", "text": "57. 운동 및 자기관리 루틴?", "options": ["주 3~5회 헬스, 필라테스, 러닝 필수", "주말 가벼운 산책이나 스트레칭", "다이어트와 체형 관리에 엄격한 편", "운동을 거의 안 하는 편"]},
-    58: {"category": "일상·생활 습관 및 취미", "text": "58. 사우나, 찜질방, 스파 선호도?", "options": ["땀 빼고 목욕하는 문화 매우 좋아함", "대중탕 위생 문제로 절대 가지 않음", "개별 료칸이나 프라이빗 스파만 선호", "가끔 기분 전환용으로 무난하게 이용"]},
-    59: {"category": "일상·생활 습관 및 취미", "text": "59. 차 안에서의 흡연 및 취식?", "options": ["내 차 안에서는 물 이외 취식/흡연 절대 불가", "냄새 안 나는 간단한 음료/과자는 허용", "자유롭게 음식 섭취 가능", "차는 이동 수단일 뿐, 털털하게 관리"]},
-    60: {"category": "일상·생활 습관 및 취미", "text": "60. 문신(타투)에 대한 시선?", "options": ["작은 레터링이나 감성 타투는 개성으로 인정", "크기 무관 타투 일절 반대", "혐오감을 주지 않는 선에서 자유", "본인도 타투가 있어 긍정적"]},
-
-    61: {"category": "갈등 해결 및 관계·대화", "text": "61. 다퉜을 때 갈등 해결 방식?", "options": ["감정이 상해도 무조건 당일 밤 대화로 풀기", "감정을 가라앉힐 생각할 시간(1~2일) 갖기", "사과 편지나 장문의 카톡으로 이성적 정리", "자고 일어나면 아무 일 없었다는 듯 일상 복귀"]},
-    62: {"category": "갈등 해결 및 관계·대화", "text": "62. 화가 났을 때 감정 표출 방식?", "options": ["침묵 모드 (말을 섞지 않음)", "서운한 점을 논리적으로 조목조목 따짐", "눈물이 먼저 나서 대화가 중단됨", "솔직하게 언성을 높여서라도 감정을 즉각 표출"]},
-    63: {"category": "갈등 해결 및 관계·대화", "text": "63. 배우자의 이성 친구 허용 범위?", "options": ["1:1 만남(식사/술/커피) 절대 불가", "단체 모임에 섞여 있는 것은 무방", "배우자에게 사전 공유한다면 1:1 커피/식사 가능", "오랜 동창/친구라면 밤늦은 술자리도 신뢰"]},
-    64: {"category": "갈등 해결 및 관계·대화", "text": "64. 스마트폰 비밀번호 공개 여부?", "options": ["부부라도 완벽한 프라이버시 (절대 열람 금지)", "비번은 공유하되 굳이 들여다보지 않음", "원할 때 언제든 서로 자유롭게 확인", "위치 추적 앱 설치까지 상호 동의 가능"]},
-    65: {"category": "갈등 해결 및 관계·대화", "text": "65. 사랑 표현(애정 표현) 스타일?", "options": ["하루에도 수십 번 사랑한다 말하는 언어형", "스킨십(손잡기, 포옹, 뽀뽀) 중심형", "필요한 것을 챙겨주고 행동으로 보여주는 헌신형", "무뚝뚝하지만 뒤에서 묵묵히 챙겨주는 스타일"]},
-    66: {"category": "갈등 해결 및 관계·대화", "text": "66. 기념일(생일, 결혼기념일 등) 챙기기?", "options": ["호텔, 파인다이닝, 선물 등 성대한 기념 필수", "생일과 결혼기념일 딱 2개만 정성껏 챙김", "특별한 이벤트보다 따뜻한 말과 맛있는 식사", "굳이 챙기지 않고 지나가도 서운하지 않음"]},
-    67: {"category": "갈등 해결 및 관계·대화", "text": "67. 데이트 및 대화 시 침묵의 편안함?", "options": ["대화가 끊기면 어색해서 계속 말을 거는 편", "한 공간에서 각자 딴짓하며 침묵해도 편안함", "깊이 있는 진지한 대화가 매일 이어져야 함", "유머와 농담 위주의 가벼운 소통 선호"]},
-    68: {"category": "갈등 해결 및 관계·대화", "text": "68. 배우자의 슬럼프 대처법?", "options": ["해결책을 제시하고 극복 방법을 찾아줌 (T 성향)", "묻지도 따지지도 않고 꼭 안아주고 공감 (F 성향)", "혼자만의 시간을 가질 수 있게 방해하지 않음", "기분 전환을 위해 맛집이나 여행으로 이끌기"]},
-    69: {"category": "갈등 해결 및 관계·대화", "text": "69. 외모 및 옷차림에 대한 지적?", "options": ["상호 품위를 위해 스타일링 피드백 적극 수용", "개인의 개성이므로 옷차림 지적 절대 사양", "공식 석상(결혼식, 양가 방문)에서만 코칭", "트레이닝복 등 편안한 차림 지향"]},
-    70: {"category": "갈등 해결 및 관계·대화", "text": "70. 싸울 때 절대 쓰지 말아야 할 금기어?", "options": ["\"우리 헤어져\", \"이혼해\" (극단적 표현)", "\"너희 집은 왜 그러니?\" (원가족 비하)", "\"네가 다 그렇지 뭐\" (인격 비하 및 단정)", "상대방의 과거사나 컴플렉스 들추기"]},
-    71: {"category": "갈등 해결 및 관계·대화", "text": "71. 사생활(혼자만의 시간) 필요도?", "options": ["주 1~2회 퇴근 후 완벽히 혼자 있는 시간 필수", "주말 중 반나절은 개인 취미 시간 보장", "부부는 모든 여가와 일상을 함께해야 함", "서로 터치하지 않는 독립적인 생활 패턴 선호"]},
-    72: {"category": "갈등 해결 및 관계·대화", "text": "72. SNS 일상 및 얼굴 공개?", "options": ["부부 일상 및 얼굴 사진 적극 포스팅", "비공개 계정으로 소수 지인과만 공유", "눈팅 위주이며 내 사생활 업로드 절대 안 함", "배우자나 자녀 얼굴 공개는 결사반대"]},
-    73: {"category": "갈등 해결 및 관계·대화", "text": "73. 이전 연애사 언급에 대한 태도?", "options": ["과거는 과거일 뿐, 서로 솔직히 다 알아도 됨", "절대로 먼저 묻지도 말고 말하지도 않기", "연애 횟수나 기간 정도는 가볍게 공유", "이전 연애 흔적(사진, 선물)은 결혼 전 완벽 폐기"]},
-    74: {"category": "갈등 해결 및 관계·대화", "text": "74. 술 취한 상태에서의 주사 용인 기준?", "options": ["잠들거나 말 많아지는 수준까지만 허용", "필름 끊김(블랙아웃) 1회 발생 시 엄중 경고", "주사로 인한 시비나 폭언 시 즉시 결별 사유", "술자리 연락 두절 시 신뢰 회복 불가"]},
-    75: {"category": "갈등 해결 및 관계·대화", "text": "75. 내가 생각하는 성공적인 결혼 생활이란?", "options": ["경제적 풍요와 사회적 성공을 함께 일구는 팀플레이", "세상 누구보다 편안한 내 편이 집에 있다는 정서적 안정", "서로의 자유와 성장을 응원하는 독립적인 동반자", "아이를 올바르게 키워 화목한 가정을 완성하는 것"]}
+CORE_QUESTIONS_3040 = {
+    1: {
+        "text": "1. 결혼관 및 만남의 최종 지향점?",
+        "options": ["1~2년 이내 진지한 결혼 희망", "자연스럽게 연애 후 결혼 고려", "비혼주의 또는 자유로운 연애", "취미와 가치관을 공유할 소울메이트"]
+    },
+    2: {
+        "text": "2. 맞벌이 및 가사 분담에 대한 생각?",
+        "options": ["맞벌이 필수 + 가사/육아 공평 분담", "한쪽 집중형 외벌이 지향", "상황에 따른 유연한 상호 협력", "외주 서비스 적극 활용 및 효율 중시"]
+    },
+    3: {
+        "text": "3. 자산 형성 및 재테크 관심도?",
+        "options": ["부동산/주식 등 적극적 투자 및 자산 증식", "예적금 중심의 안정적 자산 운용", "현재의 삶과 소비를 즐기는 편", "배우자와 함께 새로운 재테크 설계"]
+    },
+    4: {
+        "text": "4. 주말 및 여가시간 소비 패턴?",
+        "options": ["맛집 투어, 여행, 카페 등 밖에서의 데이트", "집에서 영화, 요리, 휴식을 즐기는 집돌이/집순이", "테니스, 골프, 헬스 등 운동/자기계발", "각자의 취미를 존중하며 유연한 시간 배분"]
+    },
+    5: {
+        "text": "5. 음주 성향 및 라이프스타일?",
+        "options": ["분위기 있는 와인/위스키/가벼운 반주 선호", "비음주 또는 거의 마시지 않음", "친구·지인들과 활발한 술자리 선호", "상대방의 성향에 맞춤 가능"]
+    }
 }
 
 st.markdown("""
@@ -225,10 +166,26 @@ st.markdown("""
     @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
 
     .stApp {
-        background: radial-gradient(circle at 50% 0%, #172554 0%, #090D16 60%, #05070B 100%) !important;
+        background: radial-gradient(circle at 50% 0%, #172033 0%, #0A0D14 60%, #050608 100%) !important;
         color: #F8FAFC !important;
-        font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, Roboto, sans-serif !important;
+        font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif !important;
     }
+
+    .stLinkButton > a {
+        background-color: #FEE500 !important;
+        color: #191919 !important;
+        font-weight: 900 !important;
+        font-size: 1.15rem !important;
+        border-radius: 14px !important;
+        height: 3.6rem !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        border: none !important;
+        box-shadow: 0 4px 14px rgba(254, 229, 0, 0.4) !important;
+        margin-bottom: 12px !important;
+    }
+
     .block-container { 
         padding-top: 1.2rem !important; 
         padding-bottom: 4rem !important; 
@@ -240,25 +197,24 @@ st.markdown("""
         justify-content: space-between;
         align-items: center;
         padding: 10px 0 16px 0;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        border-bottom: 1px solid rgba(59, 130, 246, 0.2);
         margin-bottom: 16px;
     }
     .app-brand {
-        font-size: 1.25rem;
+        font-size: 1.3rem;
         font-weight: 900;
         letter-spacing: -0.5px;
-        background: linear-gradient(90deg, #FFFFFF 0%, #93C5FD 100%);
+        background: linear-gradient(90deg, #60A5FA 0%, #3B82F6 100%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
     }
 
     .hero-box {
-        background: linear-gradient(160deg, rgba(30, 41, 59, 0.7) 0%, rgba(15, 23, 42, 0.8) 100%);
+        background: linear-gradient(160deg, rgba(30, 41, 59, 0.7) 0%, rgba(15, 23, 42, 0.9) 100%);
         backdrop-filter: blur(16px);
-        -webkit-backdrop-filter: blur(16px);
-        border: 1px solid rgba(96, 165, 250, 0.25);
+        border: 1px solid rgba(96, 165, 250, 0.35);
         border-radius: 20px;
-        padding: 24px 20px;
+        padding: 26px 20px;
         text-align: center;
         margin-bottom: 1.2rem;
         box-shadow: 0 16px 36px -10px rgba(37, 99, 235, 0.25);
@@ -266,17 +222,17 @@ st.markdown("""
     .hero-badge {
         display: inline-block;
         background: rgba(59, 130, 246, 0.15);
-        border: 1px solid rgba(96, 165, 250, 0.4);
-        color: #60A5FA !important;
-        font-size: 0.72rem;
+        border: 1px solid rgba(96, 165, 250, 0.45);
+        color: #93C5FD !important;
+        font-size: 0.76rem;
         font-weight: 800;
         letter-spacing: 1.5px;
-        padding: 4px 14px;
+        padding: 5px 16px;
         border-radius: 9999px;
         margin-bottom: 10px;
     }
     .hero-title {
-        font-size: 1.9rem;
+        font-size: 2.05rem;
         font-weight: 900;
         line-height: 1.25;
         letter-spacing: -0.8px;
@@ -284,10 +240,10 @@ st.markdown("""
         margin-bottom: 8px;
     }
     .hero-subtitle {
-        font-size: 0.92rem;
-        font-weight: 500;
-        color: #94A3B8 !important;
-        line-height: 1.55;
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: #E2E8F0 !important;
+        line-height: 1.6;
     }
 
     .promise-grid {
@@ -297,44 +253,44 @@ st.markdown("""
         margin-bottom: 1.2rem;
     }
     .promise-card {
-        background: rgba(15, 23, 42, 0.65);
-        border: 1px solid rgba(255, 255, 255, 0.06);
+        background: rgba(15, 23, 42, 0.7);
+        border: 1px solid rgba(255, 255, 255, 0.08);
         border-radius: 14px;
-        padding: 12px 6px;
+        padding: 14px 6px;
         text-align: center;
     }
-    .promise-icon { font-size: 1.3rem; margin-bottom: 3px; }
-    .promise-title { font-size: 0.8rem; font-weight: 800; color: #E2E8F0 !important; }
-    .promise-desc { font-size: 0.68rem; color: #64748B !important; margin-top: 2px; }
+    .promise-icon { font-size: 1.4rem; margin-bottom: 4px; }
+    .promise-title { font-size: 0.85rem; font-weight: 800; color: #F8FAFC !important; }
+    .promise-desc { font-size: 0.72rem; color: #94A3B8 !important; margin-top: 2px; }
 
-    .feed-card {
+    .senior-card {
         position: relative;
         border-radius: 22px;
         overflow: hidden;
         margin-bottom: 1.6rem;
         background: #0F172A;
-        border: 1px solid rgba(96, 165, 250, 0.2);
-        box-shadow: 0 20px 30px -10px rgba(0, 0, 0, 0.6);
+        border: 1px solid rgba(59, 130, 246, 0.3);
+        box-shadow: 0 20px 30px -10px rgba(0, 0, 0, 0.7);
     }
-    .feed-img-box {
+    .senior-img-box {
         position: relative;
         width: 100%;
-        height: 380px;
+        height: 390px;
         overflow: hidden;
     }
-    .feed-img-blur {
+    .senior-img-blur {
         width: 100%;
         height: 100%;
         object-fit: cover;
         filter: blur(10px) brightness(0.85);
         transform: scale(1.08);
     }
-    .feed-img-clear {
+    .senior-img-clear {
         width: 100%;
         height: 100%;
         object-fit: cover;
     }
-    .feed-overlay {
+    .senior-overlay {
         position: absolute;
         bottom: 0;
         left: 0;
@@ -343,82 +299,82 @@ st.markdown("""
         background: linear-gradient(to top, #0F172A 15%, transparent 100%);
         pointer-events: none;
     }
-    .feed-blind-tag {
+    .senior-blind-tag {
         position: absolute;
         top: 16px;
         left: 16px;
-        background: rgba(15, 23, 42, 0.75);
+        background: rgba(15, 23, 42, 0.85);
         backdrop-filter: blur(8px);
-        border: 1px solid rgba(255, 255, 255, 0.15);
-        padding: 5px 12px;
+        border: 1px solid rgba(96, 165, 250, 0.4);
+        padding: 6px 14px;
         border-radius: 20px;
-        font-size: 0.72rem;
+        font-size: 0.76rem;
         font-weight: 800;
         color: #93C5FD;
     }
-    .feed-match-badge {
+    .senior-match-badge {
         position: absolute;
         top: 16px;
         right: 16px;
-        background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%);
-        padding: 6px 14px;
+        background: linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%);
+        padding: 7px 16px;
         border-radius: 20px;
-        font-size: 0.85rem;
+        font-size: 0.88rem;
         font-weight: 900;
         color: #FFFFFF;
-        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
+        box-shadow: 0 4px 14px rgba(37, 99, 235, 0.4);
     }
-    .feed-content {
-        padding: 16px 20px 20px 20px;
+    .senior-content {
+        padding: 16px 20px 22px 20px;
         margin-top: -24px;
         position: relative;
     }
-    .feed-name-row {
+    .senior-name-row {
         display: flex;
         align-items: baseline;
         gap: 8px;
         margin-bottom: 8px;
     }
-    .feed-name {
-        font-size: 1.45rem;
+    .senior-name {
+        font-size: 1.55rem;
         font-weight: 900;
         color: #FFFFFF;
         letter-spacing: -0.5px;
     }
-    .feed-age {
-        font-size: 1.1rem;
-        font-weight: 600;
-        color: #94A3B8;
+    .senior-age {
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: #CBD5E1;
     }
-    .badge-pill-job {
+    .badge-pill-gold {
         background: rgba(59, 130, 246, 0.15);
         color: #93C5FD;
-        border: 1px solid rgba(96, 165, 250, 0.3);
-        padding: 4px 10px;
+        border: 1px solid rgba(59, 130, 246, 0.35);
+        padding: 5px 12px;
         border-radius: 6px;
-        font-size: 0.76rem;
+        font-size: 0.80rem;
         font-weight: 800;
     }
-    .badge-pill-score {
+    .badge-pill-credit {
         background: rgba(16, 185, 129, 0.15);
         color: #6EE7B7;
         border: 1px solid rgba(16, 185, 129, 0.3);
-        padding: 4px 10px;
+        padding: 5px 12px;
         border-radius: 6px;
-        font-size: 0.76rem;
+        font-size: 0.80rem;
         font-weight: 800;
     }
-    .feed-intro {
-        margin-top: 10px;
-        font-size: 0.9rem;
-        color: #CBD5E1;
-        line-height: 1.5;
-        font-style: italic;
+    .senior-intro {
+        margin-top: 12px;
+        font-size: 0.94rem;
+        color: #E2E8F0;
+        line-height: 1.6;
+        word-break: keep-all;
     }
 
     .shop-card {
         background: #0F172A;
-        border: 1.5px solid rgba(96, 165, 250, 0.25);
+        border: 1.5px solid rgba(59, 130, 246, 0.25);
         border-radius: 16px;
         padding: 18px 20px;
         margin-bottom: 14px;
@@ -429,7 +385,7 @@ st.markdown("""
     .shop-card.featured {
         border-color: #3B82F6;
         background: linear-gradient(145deg, #1E293B 0%, #0F172A 100%);
-        box-shadow: 0 4px 20px rgba(59, 130, 246, 0.25);
+        box-shadow: 0 4px 20px rgba(37, 99, 235, 0.25);
     }
     .shop-title { font-size: 1.1rem; font-weight: 900; color: #FFFFFF; margin-bottom: 4px; }
     .shop-desc { font-size: 0.82rem; color: #94A3B8; }
@@ -438,50 +394,50 @@ st.markdown("""
     .bank-box { background: rgba(30, 41, 59, 0.6); border: 1px dashed rgba(96, 165, 250, 0.4); border-radius: 14px; padding: 18px; text-align: center; margin: 16px 0; }
 
     div[data-baseweb="tab-list"] {
-        background-color: rgba(15, 23, 42, 0.8) !important;
+        background-color: rgba(15, 23, 42, 0.85) !important;
         padding: 5px;
         border-radius: 14px;
-        border: 1px solid rgba(255, 255, 255, 0.08) !important;
+        border: 1px solid rgba(59, 130, 246, 0.25) !important;
         margin-bottom: 1.4rem;
         gap: 4px;
     }
     div[data-baseweb="tab"] {
         flex: 1;
-        height: 44px;
+        height: 46px;
         border-radius: 10px !important;
         background-color: transparent !important;
-        color: #64748B !important;
+        color: #94A3B8 !important;
         font-weight: 800 !important;
         font-size: 0.92rem !important;
         border: none !important;
     }
     div[data-baseweb="tab"][aria-selected="true"] {
-        background: #2563EB !important;
+        background: linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%) !important;
         color: #FFFFFF !important;
         box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
     }
     div[data-baseweb="tab-border"] { display: none !important; }
 
     div[data-baseweb="input"] {
-        background-color: rgba(15, 23, 42, 0.9) !important;
-        border: 1.5px solid #1E293B !important;
+        background-color: rgba(15, 23, 42, 0.95) !important;
+        border: 1.5px solid #334155 !important;
         border-radius: 12px !important;
     }
     div[data-baseweb="input"]:focus-within {
         border-color: #3B82F6 !important;
         box-shadow: 0 0 0 1px #3B82F6 !important;
     }
-    div[data-baseweb="input"] input { color: #FFFFFF !important; }
+    div[data-baseweb="input"] input { color: #FFFFFF !important; font-size: 0.95rem; }
 
     .stButton>button { 
         width: 100%; 
         border-radius: 12px; 
         font-weight: 800; 
-        height: 3.4rem; 
-        font-size: 1.05rem; 
+        height: 3.5rem; 
+        font-size: 1.1rem; 
         letter-spacing: -0.3px; 
         border: none !important; 
-        background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%) !important; 
+        background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%) !important; 
         color: #FFFFFF !important; 
         box-shadow: 0 6px 18px rgba(37, 99, 235, 0.35); 
         transition: transform 0.1s ease; 
@@ -532,50 +488,49 @@ def send_aligo_notice_sms(receiver_phone, text_message):
         pass
 
 DEFAULT_AVATARS = {
-    "남": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=600&auto=format&fit=crop",
-    "여": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=600&auto=format&fit=crop"
+    "남": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=600&auto=format&fit=crop",
+    "여": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop"
 }
 
-# --- 세션 상태 초기화 ---
+# 세션 상태 초기화
 if "user_id" not in st.session_state:
     st.session_state.user_id = None
 if "user_info" not in st.session_state:
     st.session_state.user_info = None
+if "kakao_user" not in st.session_state:
+    st.session_state.kakao_user = None
+
 if "sms_auth_code" not in st.session_state:
     st.session_state.sms_auth_code = None
 if "sms_verified_phone" not in st.session_state:
     st.session_state.sms_verified_phone = None
 if "sms_is_verified" not in st.session_state:
     st.session_state.sms_is_verified = False
-if "sms_send_count" not in st.session_state:
-    st.session_state.sms_send_count = 0
-if "sms_last_sent_at" not in st.session_state:
-    st.session_state.sms_last_sent_at = None
+if "sms_send_count_3040" not in st.session_state:
+    st.session_state.sms_send_count_3040 = 0
+if "sms_last_sent_at_3040" not in st.session_state:
+    st.session_state.sms_last_sent_at_3040 = None
 
-if "reset_sms_code" not in st.session_state:
-    st.session_state.reset_sms_code = None
-if "reset_verified_phone" not in st.session_state:
-    st.session_state.reset_verified_phone = None
-if "reset_target_uid" not in st.session_state:
-    st.session_state.reset_target_uid = None
+if "reset_sms_code_3040" not in st.session_state:
+    st.session_state.reset_sms_code_3040 = None
+if "reset_verified_phone_3040" not in st.session_state:
+    st.session_state.reset_verified_phone_3040 = None
+if "reset_target_uid_3040" not in st.session_state:
+    st.session_state.reset_target_uid_3040 = None
 
-# 카카오 연동 세션 상태
-if "kakao_user" not in st.session_state:
-    st.session_state.kakao_user = None
-
-# ----------------------------------------------------
-# 🌟 [카카오 로그인 콜백 핸들러]
-# 사용자가 카카오 로그인 완료 후 리디렉트되었을 때 실행
-# ----------------------------------------------------
+# 🌟 카카오 인증 콜백 처리 (1회용 코드 즉시 제거로 KOE320 방지)
 params = st.query_params
 if "code" in params and not st.session_state.user_id:
     kakao_code = params.get("code")
     k_user = get_kakao_user_info(kakao_code)
+    
+    st.query_params.clear()
+    
     if k_user:
         st.session_state.kakao_user = k_user
         kakao_id_str = str(k_user["id"])
         
-        # 1) 카카오 ID로 가입된 유저가 있는지 확인
+        # 기존 가입 여부 확인
         res = supabase.table("users").select("*").eq("kakao_id", kakao_id_str).execute()
         if res.data:
             u = res.data[0]
@@ -587,20 +542,19 @@ if "code" in params and not st.session_state.user_id:
                 u["last_login_at"] = now_utc
                 st.session_state.user_id = u["id"]
                 st.session_state.user_info = u
-                st.query_params.clear()
                 st.rerun()
         else:
-            st.info(f"💬 카카오 인증 완료 ({k_user['nickname']}님). 필수 신원 서류를 등록하여 가입을 마쳐주세요.")
-            st.query_params.clear()
+            # 신규 회원이면 등록 폼으로 화면 갱신
+            st.rerun()
 
 # --- 1. 로그인 / 신규 가입 화면 ---
 if not st.session_state.user_id:
     st.markdown(f"""
         <div class="hero-box">
-            <div class="hero-badge">🔒 3040 PRIVATE BLIND CLUB</div>
-            <div class="hero-title">💼 {BRAND_NAME_KR}</div>
-            <div class="hero-subtitle">가벼운 만남은 지치고, 결정사는 부담스러운 3040을 위한<br>
-            <strong style="color:#93C5FD;">직장·소득·신용 3중 검증 기반 프라이빗 매칭</strong></div>
+            <div class="hero-badge">💼 3040 PRIVATE SOCIAL CLUB</div>
+            <div class="hero-title">🌟 {BRAND_NAME_KR}</div>
+            <div class="hero-subtitle">진중한 가치관과 커리어를 갖춘 3040 싱글을 위한<br>
+            <strong style="color:#93C5FD;">신용·직장 검증 기반 프라이빗 매칭</strong></div>
         </div>
     """, unsafe_allow_html=True)
 
@@ -608,35 +562,35 @@ if not st.session_state.user_id:
         <div class="promise-grid">
             <div class="promise-card">
                 <div class="promise-icon">🛡️</div>
-                <div class="promise-title">직장·소득 검증</div>
-                <div class="promise-desc">명함/원천징수/750점+</div>
+                <div class="promise-title">신용·소득 검증</div>
+                <div class="promise-desc">철저한 증빙 서류 심사</div>
             </div>
             <div class="promise-card">
                 <div class="promise-icon">🚫</div>
-                <div class="promise-title">직장·지인 완벽차단</div>
-                <div class="promise-desc">회사 동료 상호 미노출</div>
+                <div class="promise-title">지인 번호 완벽차단</div>
+                <div class="promise-desc">직장/지인 안심 미노출</div>
             </div>
             <div class="promise-card">
                 <div class="promise-icon">🔒</div>
                 <div class="promise-title">블라인드 프로필</div>
-                <div class="promise-desc">상호 수락 시 얼굴 공개</div>
+                <div class="promise-desc">상호 수락 시 프로필 공개</div>
             </div>
         </div>
     """, unsafe_allow_html=True)
 
-    # 🌟 [카카오 계정으로 간편 로그인 버튼]
-    kakao_login_url = get_kakao_login_url()
-    st.markdown(f"""
-        <a href="{kakao_login_url}" target="_self" style="text-decoration:none;">
-            <div style="background-color: #FEE500; color: #191919; padding: 14px 20px; 
-                        border-radius: 12px; text-align: center; font-weight: 800; font-size: 1.05rem; 
-                        box-shadow: 0 4px 14px rgba(254, 229, 0, 0.35); margin-bottom: 16px;">
-                💬 카카오 계정으로 간편 시작
-            </div>
-        </a>
-    """, unsafe_allow_html=True)
-
-    tab_login, tab_join = st.tabs(["🔑 정회원 로그인", "📝 신규 프로필 등록"])
+    # 카카오 인증 신규 회원인 경우 안내 배너 및 탭 순서 자동 전환
+    if st.session_state.kakao_user:
+        k_nick = st.session_state.kakao_user.get("nickname", "회원")
+        st.success(f"🎉 **{k_nick}**님, 카카오 본인 확인이 완료되었습니다!\n\n블라인드 라온 회원 심사를 위해 아래에서 기본 정보와 서류를 제출해 주세요.")
+        tab_join, tab_login = st.tabs(["📝 신규 프로필 등록 (카카오 연동)", "🔑 기존 정회원 로그인"])
+    else:
+        kakao_login_url = get_kakao_login_url()
+        st.link_button(
+            "💬 카카오 계정으로 간편 시작",
+            url=kakao_login_url,
+            use_container_width=True
+        )
+        tab_login, tab_join = st.tabs(["🔑 정회원 로그인", "📝 신규 프로필 등록"])
 
     with tab_login:
         login_name = st.text_input("성명", key="l_name")
@@ -649,15 +603,11 @@ if not st.session_state.user_id:
                 st.error("성명, 휴대폰 번호, 비밀번호를 모두 입력해 주세요.")
             else:
                 hashed_input = hash_password(login_pwd)
-                res = supabase.table("users").select("*")\
-                    .eq("name", login_name.strip())\
-                    .eq("phone", clean_p)\
-                    .execute()
+                res = supabase.table("users").select("*").eq("name", login_name.strip()).eq("phone", clean_p).execute()
 
                 if res.data:
                     u = res.data[0]
                     stored_pwd = u.get("password", "")
-                    
                     if stored_pwd == hashed_input or stored_pwd == login_pwd.strip():
                         if u.get("is_suspended"):
                             st.error("🚫 제재 조치된 계정입니다. 고객센터로 문의해 주세요.")
@@ -679,13 +629,13 @@ if not st.session_state.user_id:
 
         with st.expander("🔑 비밀번호를 잊으셨나요? (간편 재설정)"):
             st.caption("가입 시 등록한 성명과 휴대폰 번호로 인증 후 새 비밀번호를 설정할 수 있습니다.")
-            f_name = st.text_input("가입 성명", key="f_name")
+            f_name = st.text_input("가입 성명", key="f_name_3040")
             col_fp1, col_fp2 = st.columns([2.5, 1.2])
             with col_fp1:
-                f_phone = st.text_input("가입 휴대폰 번호", placeholder="01012345678", key="f_phone")
+                f_phone = st.text_input("가입 휴대폰 번호", placeholder="01012345678", key="f_phone_3040")
             with col_fp2:
                 st.write("")
-                btn_find_sms = st.button("인증문자 발송", key="btn_find_sms")
+                btn_find_sms = st.button("인증문자 발송", key="btn_find_sms_3040")
 
             clean_fp = re.sub(r'[^0-9]', '', f_phone.strip())
             if btn_find_sms:
@@ -697,33 +647,32 @@ if not st.session_state.user_id:
                         st.error("등록된 회원 정보가 존재하지 않습니다.")
                     else:
                         code = str(random.randint(100000, 999999))
-                        st.session_state.reset_sms_code = code
-                        st.session_state.reset_verified_phone = clean_fp
-                        st.session_state.reset_target_uid = chk[0]["id"]
+                        st.session_state.reset_sms_code_3040 = code
+                        st.session_state.reset_verified_phone_3040 = clean_fp
+                        st.session_state.reset_target_uid_3040 = chk[0]["id"]
                         send_aligo_sms(clean_fp, code)
                         st.success("인증번호가 발송되었습니다. 아래에 입력해 주세요.")
 
-            if st.session_state.reset_sms_code:
-                in_fcode = st.text_input("문자 인증번호 6자리", key="in_find_code")
-                new_reset_pwd = st.text_input("새로운 간편 비밀번호 (4~6자리)", type="password", key="new_reset_pwd")
+            if st.session_state.reset_sms_code_3040:
+                in_fcode = st.text_input("문자 인증번호 6자리", key="in_find_code_3040")
+                new_reset_pwd = st.text_input("새로운 간편 비밀번호 (4~6자리)", type="password", key="new_reset_pwd_3040")
                 
-                if st.button("새 비밀번호로 변경 및 저장", key="btn_do_reset"):
-                    if in_fcode.strip() != st.session_state.reset_sms_code:
+                if st.button("새 비밀번호로 변경 및 저장", key="btn_do_reset_3040"):
+                    if in_fcode.strip() != st.session_state.reset_sms_code_3040:
                         st.error("인증번호가 일치하지 않습니다.")
                     elif len(new_reset_pwd.strip()) < 4:
                         st.error("비밀번호는 최소 4자리 이상이어야 합니다.")
                     else:
                         supabase.table("users").update({
                             "password": hash_password(new_reset_pwd)
-                        }).eq("id", st.session_state.reset_target_uid).execute()
-                        st.session_state.reset_sms_code = None
-                        st.session_state.reset_target_uid = None
+                        }).eq("id", st.session_state.reset_target_uid_3040).execute()
+                        st.session_state.reset_sms_code_3040 = None
+                        st.session_state.reset_target_uid_3040 = None
                         st.success("🎉 비밀번호가 안전하게 재설정되었습니다! 새 비밀번호로 로그인해 주세요.")
 
     with tab_join:
-        st.markdown("##### 👤 기본 인적사항 (만 28~45세 대상)")
+        st.markdown("##### 👤 기본 인적사항 (만 28~49세 대상)")
         
-        # 카카오 연동 시 기본 닉네임 활용
         default_name = ""
         if st.session_state.kakao_user:
             default_name = st.session_state.kakao_user.get("nickname", "")
@@ -743,10 +692,10 @@ if not st.session_state.user_id:
             now_ts = datetime.now().timestamp()
             if len(clean_jp) < 10:
                 st.error("올바른 휴대폰 번호를 입력해 주세요.")
-            elif st.session_state.sms_send_count >= 3:
+            elif st.session_state.sms_send_count_3040 >= 3:
                 st.error("🚨 인증번호 발송 허용 횟수(3회)를 초과했습니다. 잠시 후 다시 시도해 주세요.")
-            elif st.session_state.sms_last_sent_at and (now_ts - st.session_state.sms_last_sent_at < 60):
-                remaining = int(60 - (now_ts - st.session_state.sms_last_sent_at))
+            elif st.session_state.sms_last_sent_at_3040 and (now_ts - st.session_state.sms_last_sent_at_3040 < 60):
+                remaining = int(60 - (now_ts - st.session_state.sms_last_sent_at_3040))
                 st.warning(f"⏳ {remaining}초 후에 다시 요청할 수 있습니다. 문자가 도착할 때까지 기다려 주세요.")
             else:
                 dup = supabase.table("users").select("id").eq("phone", clean_jp).execute().data
@@ -757,10 +706,10 @@ if not st.session_state.user_id:
                     st.session_state.sms_auth_code = code
                     st.session_state.sms_verified_phone = clean_jp
                     st.session_state.sms_is_verified = False
-                    st.session_state.sms_last_sent_at = now_ts
-                    st.session_state.sms_send_count += 1
+                    st.session_state.sms_last_sent_at_3040 = now_ts
+                    st.session_state.sms_send_count_3040 += 1
                     send_aligo_sms(clean_jp, code)
-                    st.success(f"문자로 발송된 6자리 인증번호를 입력해 주세요. (발송 횟수: {st.session_state.sms_send_count}/3회)")
+                    st.success(f"문자로 발송된 6자리 인증번호를 입력해 주세요. (발송 횟수: {st.session_state.sms_send_count_3040}/3회)")
 
         if st.session_state.sms_auth_code:
             c_code, c_btn = st.columns([2.5, 1.2])
@@ -777,7 +726,7 @@ if not st.session_state.user_id:
 
         j_pwd = st.text_input("간편 비밀번호 (4~6자리)", type="password", key="j_pwd")
         j_gender = st.radio("성별", ["남", "여"], horizontal=True, key="j_gender")
-        j_age = st.number_input("나이 (만 나이)", 28, 45, 34, key="j_age")
+        j_age = st.number_input("나이 (만 나이)", 28, 49, 36, key="j_age")
 
         r_col1, r_col2 = st.columns(2)
         with r_col1:
@@ -786,28 +735,36 @@ if not st.session_state.user_id:
             j_sigungu = st.selectbox("시·군·구", KOREA_REGIONS[j_sido], index=0, key="j_sigungu")
         j_region = f"{j_sido} {j_sigungu}"
 
-        st.markdown("##### 💼 커리어 및 신용 인증 (배지 부여)")
-        j_job = st.text_input("직장명 및 직무", placeholder="예: 네이버 서비스기획 / 삼일회계법인 회계사", key="j_job")
+        st.markdown("##### 💼 커리어 및 라이프스타일")
+        j_job = st.text_input("직업 또는 직장/전문분야", placeholder="예: IT 대기업 개발자 / 금융 공기업 / 스타트업 대표 / 전문직", key="j_job")
         job_typos = audit_text_typos(j_job)
         if job_typos:
             st.caption(f"💡 표현 교정 안내: {', '.join(job_typos)}")
 
-        j_intro = st.text_area("한 줄 자기소개 (가치관 및 지향하는 인연)", value="진중하고 품격 있는 인연을 희망합니다.", key="j_intro")
+        j_hobbies = st.text_input("취미 및 여가 생활", placeholder="예: 러닝, 골프, 와인, 전시회, 맛집 투어", key="j_hobbies")
+        hobby_typos = audit_text_typos(j_hobbies)
+        if hobby_typos:
+            st.caption(f"💡 표현 교정 안내: {', '.join(hobby_typos)}")
+
+        j_intro = st.text_area("인연에게 전하고 싶은 말씀", value="서로의 커리어와 가치관을 존중하며 긍정적인 에너지를 나눌 수 있는 분을 찾습니다.", key="j_intro")
         intro_typos = audit_text_typos(j_intro)
         if intro_typos:
             st.caption(f"💡 소개글 맞춤법 안내: {', '.join(intro_typos)}")
 
-        j_credit = st.number_input("공인 신용점수 (750점 이상 필수)", 0, 1000, 830, key="j_credit")
-        j_doc = st.file_uploader("직장/소득/신용 증빙 서류 첨부 (명함, 사원증, 토스 신용캡처 등)", type=["jpg", "png", "pdf"], key="j_doc")
+        st.markdown("##### 🛡️ 신용 검증 기준")
+        req_score = 800 if j_gender == "남" else 650
+        st.caption(f"ℹ️ {j_gender}성 입회 기준: 공인 신용점수 {req_score}점 이상")
+        j_credit = st.number_input(f"공인 신용점수 ({req_score}점 이상 필수)", 0, 1000, 830 if j_gender == "남" else 770, key="j_credit")
+        j_doc = st.file_uploader("신원·소득 증빙 서류 첨부 (재직증명서, 신용리포트, 소득금액증명 중 택1)", type=["jpg", "png", "pdf"], key="j_doc")
 
-        st.markdown("##### 🎯 3040 필수 가치관 5대 문답 (가입용)")
-        a1 = st.radio(QUESTIONS_75[1]["text"], QUESTIONS_75[1]["options"], key="jq_1")
-        a2 = st.radio(QUESTIONS_75[2]["text"], QUESTIONS_75[2]["options"], key="jq_2")
-        a3 = st.radio(QUESTIONS_75[3]["text"], QUESTIONS_75[3]["options"], key="jq_3")
-        a4 = st.radio(QUESTIONS_75[4]["text"], QUESTIONS_75[4]["options"], key="jq_4")
-        a5 = st.radio(QUESTIONS_75[5]["text"], QUESTIONS_75[5]["options"], key="jq_5")
+        st.markdown("##### 🎯 3040 필수 가치관 5대 문답")
+        a1 = st.radio(CORE_QUESTIONS_3040[1]["text"], CORE_QUESTIONS_3040[1]["options"], key="jq_1")
+        a2 = st.radio(CORE_QUESTIONS_3040[2]["text"], CORE_QUESTIONS_3040[2]["options"], key="jq_2")
+        a3 = st.radio(CORE_QUESTIONS_3040[3]["text"], CORE_QUESTIONS_3040[3]["options"], key="jq_3")
+        a4 = st.radio(CORE_QUESTIONS_3040[4]["text"], CORE_QUESTIONS_3040[4]["options"], key="jq_4")
+        a5 = st.radio(CORE_QUESTIONS_3040[5]["text"], CORE_QUESTIONS_3040[5]["options"], key="jq_5")
 
-        agree_terms = st.checkbox("[필수] 3040 프라이빗 소셜 클럽 이용약관 및 증빙서류 확인 즉시 영구 파기에 동의합니다.", key="agree_terms")
+        agree_terms = st.checkbox("[필수] 블라인드 라온 이용약관 및 증빙서류 확인 즉시 파기에 동의합니다.", key="agree_terms")
 
         if st.button("신원 검증 신청 및 가입 완료", key="btn_submit_join"):
             if not agree_terms:
@@ -818,10 +775,10 @@ if not st.session_state.user_id:
                 st.error("휴대폰 SMS 인증을 완료해 주세요.")
             elif len(j_pwd.strip()) < 4:
                 st.error("비밀번호는 최소 4자리 이상이어야 합니다.")
-            elif j_credit < 750:
-                st.error("입회 기준 미달: 블라인드 라온은 공인 신용점수 750점 이상만 승인됩니다.")
+            elif j_credit < req_score:
+                st.error(f"입회 기준 미달: 블라인드 라온은 {j_gender}성 기준 {req_score}점 이상만 승인됩니다.")
             elif not j_doc:
-                st.error("신원 및 커리어/신용 증빙 서류를 첨부해 주세요.")
+                st.error("신원 및 신용 증빙 서류를 첨부해 주세요.")
             else:
                 doc_ext = j_doc.name.split(".")[-1].lower()
                 doc_name = f"verify_{clean_jp}_{uuid.uuid4().hex[:6]}.{doc_ext}"
@@ -851,8 +808,8 @@ if not st.session_state.user_id:
                         "is_vip": False,
                         "blocked_phones": [],
                         "last_login_at": now_utc,
-                        "job": j_job.strip() if j_job else "전문직/대기업",
-                        "hobbies": "취미 및 여가",
+                        "job": j_job.strip() if j_job else "전문직/회사원",
+                        "hobbies": j_hobbies.strip() if j_hobbies else "여가 생활",
                         "intro": j_intro.strip(),
                         "is_admin": False,
                         "is_suspended": False
@@ -885,14 +842,17 @@ else:
     me = st.session_state.user_info
     my_tickets = me.get('ticket_count', 0)
 
-    st.markdown(f"""
-        <div class="app-header">
-            <div class="app-brand">💼 {BRAND_NAME_KR}</div>
-            <div style="font-size:0.85rem; font-weight:800; color:#38BDF8;">🎟️ 보유 티켓 {my_tickets}장</div>
-        </div>
-    """, unsafe_allow_html=True)
+    h_col1, h_col2 = st.columns([2.5, 1.5])
+    with h_col1:
+        st.markdown(f'<div class="app-brand">🌟 {BRAND_NAME_KR}</div>', unsafe_allow_html=True)
+    with h_col2:
+        st.markdown(f"""
+            <div style="text-align:right; margin-top:4px;">
+                <span style="font-size:0.92rem; font-weight:900; color:#60A5FA;">🎟️ {my_tickets}장</span>
+            </div>
+        """, unsafe_allow_html=True)
 
-    with st.expander("🚫 아는 사람 / 직장 동료 번호 차단 관리"):
+    with st.expander("🚫 아는 사람 / 지인 번호 차단 관리"):
         curr_blocks = me.get("blocked_phones") or []
         b_input = st.text_input("차단할 휴대폰 번호 (- 제외)", placeholder="예: 01098765432", key="in_block_p")
         if st.button("차단 목록에 등록"):
@@ -913,7 +873,12 @@ else:
     # --- TAB 1: 추천 피드 ---
     with tabs_main[0]:
         target_gender = "여" if me["gender"] == "남" else "남"
-        raw_candidates = supabase.table("users").select("*").eq("gender", target_gender).eq("is_suspended", False).execute().data
+        raw_candidates = supabase.table("users").select("*")\
+            .eq("gender", target_gender)\
+            .gte("age", 28)\
+            .lte("age", 49)\
+            .eq("is_suspended", False)\
+            .execute().data
 
         my_blocked_set = set(me.get("blocked_phones") or [])
         my_phone = me.get("phone", "")
@@ -945,48 +910,47 @@ else:
 
             for cand, c_answers, common_keys, score in cand_scores:
                 c_img = cand.get("photo_url") or DEFAULT_AVATARS.get(cand["gender"])
-                intro_txt = cand.get("intro") or "가치관과 라이프스타일이 통하는 소중한 인연을 기다립니다."
+                intro_txt = cand.get("intro") or "서로를 존중하고 아껴줄 소중한 인연을 기다립니다."
 
                 st.markdown(f"""
-                    <div class="feed-card">
-                        <div class="feed-img-box">
-                            <img src="{c_img}" class="feed-img-blur">
-                            <div class="feed-overlay"></div>
-                            <div class="feed-blind-tag">🔒 블라인드 보호 중</div>
-                            <div class="feed-match-badge">{score}% 매칭</div>
+                    <div class="senior-card">
+                        <div class="senior-img-box">
+                            <img src="{c_img}" class="senior-img-blur">
+                            <div class="senior-overlay"></div>
+                            <div class="senior-blind-tag">🔒 블라인드 보호</div>
+                            <div class="senior-match-badge">{score}% 일치</div>
                         </div>
-                        <div class="feed-content">
-                            <div class="feed-name-row">
-                                <span class="feed-name">{cand['name'][0]}*님</span>
-                                <span class="feed-age">{cand['age']}세 · {cand['region'].split()[0]}</span>
+                        <div class="senior-content">
+                            <div class="senior-name-row">
+                                <span class="senior-name">{cand['name'][0]}*님</span>
+                                <span class="senior-age">{cand['age']}세 · {cand['region'].split()[0]}</span>
                             </div>
                             <div style="display:flex; gap:6px; flex-wrap:wrap; margin-bottom:10px;">
-                                <span class="badge-pill-job">💼 {cand.get('job', '전문직/대기업')}</span>
-                                <span class="badge-pill-score">🛡️ 신용 {cand['credit_score']}점</span>
+                                <span class="badge-pill-gold">💼 {cand.get('job', '직장 인증')}</span>
+                                <span class="badge-pill-credit">🛡️ 신용 {cand['credit_score']}점</span>
                             </div>
-                            <div class="feed-intro">"{intro_txt}"</div>
+                            <div class="senior-intro">"{intro_txt}"</div>
                         </div>
                     </div>
                 """, unsafe_allow_html=True)
 
-                with st.expander(f"🔍 가치관 대조표 ({len(common_keys)}개 문항 일치율 확인)"):
-                    for q_num in sorted(list(common_keys)):
-                        if q_num in QUESTIONS_75:
-                            q_text = QUESTIONS_75[q_num]["text"]
-                            m_val = my_answers.get(q_num, "미응답")
-                            c_val = c_answers.get(q_num, "미응답")
-                            is_match = (m_val == c_val)
-                            match_label = "🟢 일치" if is_match else "⚪ 상이"
-                            st.markdown(f"**[{match_label}] {q_text}**")
-                            st.caption(f"• 내 답변: {m_val} | 상대방: {c_val}")
+                with st.expander("🔍 5대 가치관 상세 대조표"):
+                    for q_num in sorted(list(CORE_QUESTIONS_3040.keys())):
+                        q_text = CORE_QUESTIONS_3040[q_num]["text"]
+                        m_val = my_answers.get(q_num, "미응답")
+                        c_val = c_answers.get(q_num, "미응답")
+                        is_match = (m_val == c_val)
+                        match_label = "🟢 일치" if is_match else "⚪ 상이"
+                        st.markdown(f"**[{match_label}] {q_text}**")
+                        st.caption(f"• 내 답변: {m_val} | 상대방: {c_val}")
 
                 req_status = sent_dict.get(cand["id"])
                 if req_status == "PENDING":
-                    st.button(f"⏳ 대화 수락 대기중 ({cand['name'][0]}*님)", key=f"feed_btn_{cand['id']}", disabled=True)
+                    st.button(f"⏳ 수락 대기중 ({cand['name'][0]}*님)", key=f"feed_btn_{cand['id']}", disabled=True)
                 elif req_status == "ACCEPTED":
-                    st.success("🎉 매칭 성공! 보관함에서 선명한 원본 사진을 확인하세요.")
+                    st.success("🎉 매칭 성공! 보관함에서 선명한 사진과 연락처를 확인하세요.")
                 else:
-                    if st.button("💌 대화 신청 (티켓 1장 차감)", key=f"feed_btn_{cand['id']}"):
+                    if st.button(f"💌 대화 신청하기 (티켓 1장)", key=f"feed_btn_{cand['id']}"):
                         if my_tickets <= 0:
                             st.error("🚨 보유 티켓이 부족합니다. 상단의 [💳 티켓 충전] 탭에서 충전 후 이용해 주세요.")
                         else:
@@ -1045,16 +1009,16 @@ else:
                 for req in sent_list:
                     rcv = supabase.table("users").select("*").eq("id", req["receiver_id"]).execute().data[0]
                     if req["status"] == "ACCEPTED":
-                        st.success(f"🎉 **{rcv['name']}** 님과 매칭되어 블라인드가 해제되었습니다!")
+                        st.success(f"🎉 **{rcv['name']}** 님과 매칭이 성사되었습니다!")
                         r_img = rcv.get("photo_url") or DEFAULT_AVATARS.get(rcv["gender"])
                         st.markdown(f"""
-                            <div class="feed-card">
-                                <div class="feed-img-box">
-                                    <img src="{r_img}" class="feed-img-clear">
+                            <div class="senior-card">
+                                <div class="senior-img-box">
+                                    <img src="{r_img}" class="senior-img-clear">
                                 </div>
                             </div>
                         """, unsafe_allow_html=True)
-                        st.write(f"📞 안심 연락처: **{rcv['phone']}** | 💼 직장: **{rcv.get('job')}**")
+                        st.write(f"📞 안심 연락처: **{rcv['phone']}** | 💼 직장/경력: **{rcv.get('job')}**")
                         st.markdown(f'<a href="tel:{rcv["phone"]}">📞 바로 전화 걸기</a>', unsafe_allow_html=True)
                     elif req["status"] == "REJECTED":
                         st.write(f"• **{rcv['name'][0]}*님**이 신청을 정중히 사양하여 **티켓 1장이 즉시 반환**되었습니다.")
@@ -1072,12 +1036,12 @@ else:
                     snd = supabase.table("users").select("*").eq("id", req["sender_id"]).execute().data[0]
                     st.markdown(f"**{snd['name'][0]}*님** ({snd['gender']} · {snd['age']}세 · {snd.get('job')})")
                     if req["status"] == "ACCEPTED":
-                        st.success("🤝 대화 수락 완료! 블라인드가 해제되었습니다.")
+                        st.success("🤝 대화 수락 완료! 연락처가 공개되었습니다.")
                         s_img = snd.get("photo_url") or DEFAULT_AVATARS.get(snd["gender"])
                         st.markdown(f"""
-                            <div class="feed-card">
-                                <div class="feed-img-box">
-                                    <img src="{s_img}" class="feed-img-clear">
+                            <div class="senior-card">
+                                <div class="senior-img-box">
+                                    <img src="{s_img}" class="senior-img-clear">
                                 </div>
                             </div>
                         """, unsafe_allow_html=True)
@@ -1085,9 +1049,9 @@ else:
                     elif req["status"] == "PENDING":
                         col_ac, col_re = st.columns(2)
                         with col_ac:
-                            if st.button("수락 및 얼굴 공개", key=f"ac_{req['id']}"):
+                            if st.button("수락 및 연락처 공유", key=f"ac_{req['id']}"):
                                 supabase.table("match_requests").update({"status": "ACCEPTED"}).eq("id", req["id"]).execute()
-                                send_aligo_notice_sms(snd["phone"], f"{me['name'][0]}* 님이 대화를 수락했습니다. 프로필 블라인드가 해제되었습니다.")
+                                send_aligo_notice_sms(snd["phone"], f"{me['name'][0]}* 님이 대화를 수락했습니다. 안심 연락처를 확인하세요.")
                                 st.rerun()
                         with col_re:
                             if st.button("거절", key=f"re_{req['id']}"):
@@ -1103,8 +1067,8 @@ else:
     with tabs_main[2]:
         st.markdown(f"""
             <div style="text-align:center; padding: 10px 0 16px 0;">
-                <h3 style="color:#FFFFFF; margin-bottom:4px;">💼 3040 프라이빗 멤버십 충전</h3>
-                <div style="font-size:0.9rem; color:#94A3B8;">현재 회원님의 보유 티켓: <strong style="color:#38BDF8; font-size:1.05rem;">{my_tickets}장</strong></div>
+                <h3 style="color:#FFFFFF; margin-bottom:4px;">💼 프라이빗 멤버십 충전</h3>
+                <div style="font-size:0.9rem; color:#94A3B8;">현재 회원님의 보유 티켓: <strong style="color:#93C5FD; font-size:1.05rem;">{my_tickets}장</strong></div>
             </div>
         """, unsafe_allow_html=True)
 
@@ -1112,7 +1076,7 @@ else:
             <div class="shop-card">
                 <div>
                     <div class="shop-title">🎟️ 1회 대화 신청권</div>
-                    <div class="shop-desc">마음에 드는 이성 1명에게 신청</div>
+                    <div class="shop-desc">원하는 회원 1명에게 매칭 신청</div>
                 </div>
                 <div class="shop-price">30,000원</div>
             </div>
@@ -1128,9 +1092,9 @@ else:
 
             <div class="shop-card">
                 <div>
-                    <span class="shop-badge" style="background:#1E3A8A;">💼 VIP 추천</span>
+                    <span class="shop-badge" style="background:#1E40AF;">👑 VIP 추천</span>
                     <div class="shop-title">👑 5회 VIP 전담 패키지</div>
-                    <div class="shop-desc">5회 신청 + 프리미엄 매칭 매니저 서포트</div>
+                    <div class="shop-desc">5회 신청 + 매칭 매니저 우선 주선</div>
                 </div>
                 <div class="shop-price">130,000원</div>
             </div>
@@ -1139,7 +1103,7 @@ else:
         st.markdown(f"""
             <div class="bank-box">
                 <div style="font-size:0.85rem; color:#E2E8F0; font-weight:700;">🏦 무통장 안심 입금 계좌</div>
-                <div style="font-size:1.15rem; font-weight:900; color:#38BDF8; margin:6px 0;">{BANK_INFO['bank']} {BANK_INFO['account']}</div>
+                <div style="font-size:1.15rem; font-weight:900; color:#93C5FD; margin:6px 0;">{BANK_INFO['bank']} {BANK_INFO['account']}</div>
                 <div style="font-size:0.82rem; color:#94A3B8;">예금주: {BANK_INFO['holder']} (입금자명: <strong>{me['name']}</strong>)</div>
             </div>
         """, unsafe_allow_html=True)
@@ -1174,15 +1138,20 @@ else:
             <div style="text-align:center; padding:10px 0 20px 0;">
                 <img src="{my_avatar}" style="width:110px; height:110px; border-radius:50%; object-fit:cover; border:3px solid #3B82F6;">
                 <h3 style="margin:10px 0 4px 0; color:#FFFFFF;">{me['name']} ({me['gender']} · {me['age']}세)</h3>
-                <div style="font-size:0.85rem; color:#94A3B8;">📍 {me['region']} | 💼 {me.get('job')}</div>
+                <div style="font-size:0.9rem; color:#CBD5E1;">📍 {me['region']} | 💼 {me.get('job')}</div>
             </div>
         """, unsafe_allow_html=True)
 
-        st.markdown("##### ✏️ 직장 및 소개글 수정")
-        edit_job = st.text_input("직장명 및 직무 수정", value=me.get("job", ""), key="edit_job")
+        st.markdown("##### ✏️ 자기소개 및 직장·취미 정보 수정")
+        edit_job = st.text_input("직업 또는 직장/전문분야 수정", value=me.get("job", ""), key="edit_job")
         job_errs = audit_text_typos(edit_job)
         if job_errs:
             st.caption(f"💡 권장 수정: {', '.join(job_errs)}")
+
+        edit_hobbies = st.text_input("취미 및 여가 생활 수정", value=me.get("hobbies", ""), key="edit_hobbies")
+        hobby_errs = audit_text_typos(edit_hobbies)
+        if hobby_errs:
+            st.caption(f"💡 권장 수정: {', '.join(hobby_errs)}")
 
         edit_intro = st.text_area("한 줄 소개 수정", value=me.get("intro", ""), key="edit_intro")
         intro_errs = audit_text_typos(edit_intro)
@@ -1192,16 +1161,19 @@ else:
         if st.button("프로필 정보 업데이트"):
             supabase.table("users").update({
                 "job": edit_job.strip(),
+                "hobbies": edit_hobbies.strip(),
                 "intro": edit_intro.strip()
             }).eq("id", me["id"]).execute()
             me["job"] = edit_job.strip()
+            me["hobbies"] = edit_hobbies.strip()
             me["intro"] = edit_intro.strip()
             st.session_state.user_info = me
-            st.success("프로필 정보가 수정되었습니다.")
+            st.success("프로필 정보가 성공적으로 수정되었습니다.")
             st.rerun()
 
         st.markdown("---")
         st.markdown("##### 📸 프로필 사진 등록")
+        st.caption("등록된 사진은 매칭 전까지 블라인드 블러 처리되어 안전하게 보호되며, 상호 수락 시에만 상대방에게 선명하게 공개됩니다.")
         new_avatar = st.file_uploader("사진 파일 선택 (JPG, PNG)", type=["jpg", "png", "jpeg"], key="up_avatar")
         if new_avatar and st.button("사진 등록 및 저장"):
             f_ext = new_avatar.name.split(".")[-1].lower()
@@ -1214,58 +1186,15 @@ else:
             st.success("사진이 등록되었습니다. 매칭 전에는 블라인드 보호가 자동 적용됩니다.")
             st.rerun()
 
-        st.markdown("---")
-        st.markdown("#### 🎯 3040 심층 가치관 진단 (75문항)")
-        st.caption("답변을 많이 채울수록 상대방과의 매칭 일치율 정확도가 비약적으로 향상됩니다.")
-
-        categories = [
-            ("1. 결혼관 및 가족 계획 (1~15번)", 1, 15),
-            ("2. 경제관 및 자산 관리 (16~30번)", 16, 30),
-            ("3. 직업관 및 커리어·가사 (31~45번)", 31, 45),
-            ("4. 일상·생활 습관 및 취미 (46~60번)", 46, 60),
-            ("5. 갈등 해결 및 관계·대화 (61~75번)", 61, 75)
-        ]
-
-        for cat_title, start_q, end_q in categories:
-            with st.expander(cat_title):
-                cat_answers = {}
-                for q_num in range(start_q, end_q + 1):
-                    if q_num in QUESTIONS_75:
-                        q_info = QUESTIONS_75[q_num]
-                        curr_ans = my_answers.get(q_num)
-                        default_idx = q_info["options"].index(curr_ans) if curr_ans in q_info["options"] else 0
-                        
-                        ans = st.radio(
-                            q_info["text"],
-                            q_info["options"],
-                            index=default_idx,
-                            key=f"q75_{q_num}"
-                        )
-                        cat_answers[q_num] = ans
-
-                if st.button(f"💾 {cat_title.split('.')[1][:8]} 영역 답변 저장", key=f"btn_save_cat_{start_q}"):
-                    for q_num, ans_val in cat_answers.items():
-                        exist = supabase.table("user_answers").select("id").eq("user_id", me["id"]).eq("question_num", q_num).execute().data
-                        if exist:
-                            supabase.table("user_answers").update({"answer_value": ans_val}).eq("id", exist[0]["id"]).execute()
-                        else:
-                            supabase.table("user_answers").insert({
-                                "user_id": me["id"],
-                                "question_num": q_num,
-                                "answer_value": ans_val
-                            }).execute()
-                    st.success("✅ 해당 영역의 가치관 답변이 안전하게 저장되었습니다!")
-                    st.rerun()
-
-    # 👑 [관리자 전용] 회원 서류 심사 및 승인 즉시 자동 영구 파기 센터
+    # 👑 [관리자 전용] 3040 서류 심사 및 즉시 파기 센터
     if me.get("is_admin"):
         st.markdown("---")
-        with st.expander("👑 [관리자 전용] 회원 서류 심사 및 즉시 파기 센터"):
+        with st.expander("👑 [관리자 전용] 3040 서류 심사 및 즉시 파기 센터"):
             pending_users = supabase.table("users").select("*").eq("credit_status", "PENDING").execute().data
             if not pending_users:
-                st.success("현재 심사 대기 중인 신규 회원이 없습니다.")
+                st.success("현재 심사 대기 중인 회원이 없습니다.")
             else:
-                st.caption(f"총 {len(pending_users)}명의 승인 대기 서류가 있습니다. 확인 즉시 자동 파기됩니다.")
+                st.caption(f"총 {len(pending_users)}명의 서류 검토 대기자가 있습니다.")
                 for pu in pending_users:
                     st.markdown(f"**신청자:** {pu['name']} ({pu['gender']} · {pu['age']}세 · {pu.get('job')} · 신용 {pu['credit_score']}점)")
                     st.caption(f"연락처: {pu['phone']}")
@@ -1283,7 +1212,7 @@ else:
 
                     col_ap, col_rj = st.columns(2)
                     with col_ap:
-                        if st.button(f"✅ 승인 및 서류 영구 파기", key=f"btn_ap_{pu['id']}"):
+                        if st.button(f"✅ 승인 및 서류 영구 파기", key=f"btn_ap_3040_{pu['id']}"):
                             raw_fname = doc_path.split("/")[-1]
                             try:
                                 supabase.storage.from_("credit-docs").remove([raw_fname])
@@ -1296,12 +1225,12 @@ else:
                                 "credit_doc_url": "[심사 완료 후 안전 파기됨]"
                             }).eq("id", pu["id"]).execute()
 
-                            send_aligo_notice_sms(pu["phone"], "제출하신 신원 및 서류 검증이 통과되었습니다. 제출 서류는 안전하게 영구 파기되었습니다.")
-                            st.success(f"{pu['name']} 님이 정회원으로 승인되었으며, 서류가 안전하게 영구 파기되었습니다.")
+                            send_aligo_notice_sms(pu["phone"], "블라인드 라온 신원 및 신용 검증이 완료되었습니다. 제출 서류는 안전하게 영구 파기되었습니다.")
+                            st.success(f"{pu['name']} 님이 정회원으로 승인되었습니다.")
                             st.rerun()
 
                     with col_rj:
-                        if st.button(f"🚫 반려 및 서류 파기", key=f"btn_rj_{pu['id']}"):
+                        if st.button(f"🚫 반려 및 서류 파기", key=f"btn_rj_3040_{pu['id']}"):
                             raw_fname = doc_path.split("/")[-1]
                             try:
                                 supabase.storage.from_("credit-docs").remove([raw_fname])
