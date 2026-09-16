@@ -456,6 +456,11 @@ supabase = get_supabase_client()
 
 def send_aligo_sms(receiver_phone, auth_code):
     try:
+        try:
+            curr_ip = requests.get("https://api.ipify.org", timeout=2).text.strip()
+        except Exception:
+            curr_ip = "확인불가"
+
         url = "https://apis.aligo.in/send/"
         payload = {
             "key": ALIGO_API_KEY,
@@ -470,7 +475,7 @@ def send_aligo_sms(receiver_phone, auth_code):
         if res.status_code == 200 and str(r_json.get("result_code")) == "1":
             return True, "인증번호가 발송되었습니다."
         else:
-            return False, f"알리고 응답 에러: {r_json.get('message', r_json)}"
+            return False, f"알리고 응답: {r_json.get('message', r_json)} / 현재서버IP: [{curr_ip}]"
     except Exception as e:
         return False, f"SMS 통신 오류: {e}"
 
