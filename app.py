@@ -1263,3 +1263,17 @@ else:
         st.session_state.user_info = None
         st.session_state.kakao_user = None
         st.rerun()
+        
+# --- [법적 필수 표기] 플랫폼 하단 사업자 정보 푸터 ---
+st.markdown("""
+    <div style="margin-top: 50px; padding: 22px 14px; border-top: 1px solid rgba(255, 255, 255, 0.1); font-size: 0.76rem; color: #94A3B8; line-height: 1.7; word-break: keep-all;">
+        <div style="font-weight: 800; color: #CBD5E1; margin-bottom: 6px;">(주)이퀴비젼에이아이 사업자 정보</div>
+        <div><strong>상호명:</strong> 이퀴비젼에이아이 주식회사 | <strong>대표자:</strong> 오성수</div>
+        <div><strong>사업자등록번호:</strong> 302-88-04351 | <strong>통신판매업신고번호:</strong> 신고 준비 중 (발급 즉시 기재)</div>
+        <div><strong>사업장 주소:</strong> 서울특별시 금천구 벚꽃로 30, 206동 318호(독산동, 금천 롯데캐슬 골드파크 2차)</div>
+        <div><strong>고객센터:</strong> 카카오톡 1:1 상담창 | <strong>이메일:</strong> papamiso@gmail.com</div>
+        <div style="margin-top: 8px; font-size: 0.72rem; color: #64748B;">
+            © 2026 EQUIVISION AI Inc. All rights reserved. 본 플랫폼은 전자상거래법 및 개인정보보호법을 준수합니다.
+        </div>
+    </div>
+""", unsafe_allow_html=True)
